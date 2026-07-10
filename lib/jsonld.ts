@@ -103,6 +103,52 @@ export function howToJsonLd(guide: {
   };
 }
 
+export function itemListJsonLd(
+  items: { name: string; path: string }[]
+): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((it, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: it.name,
+      url: absoluteUrl(it.path),
+    })),
+  };
+}
+
+export function howToGuideJsonLd(guide: {
+  path: string;
+  title: string;
+  description: string;
+  totalMinutes: number;
+  steps: { name: string; text: string; imagePath?: string }[];
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: guide.title,
+    description: guide.description,
+    url: absoluteUrl(guide.path),
+    totalTime: `PT${guide.totalMinutes}M`,
+    step: guide.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+      ...(s.imagePath
+        ? {
+            image: {
+              "@type": "ImageObject",
+              contentUrl: absoluteUrl(s.imagePath),
+            },
+          }
+        : {}),
+    })),
+  };
+}
+
 export function breadcrumbJsonLd(
   crumbs: { name: string; path: string }[]
 ): JsonLd {

@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { CharLink } from "./CharLink";
 
+// K95 restraint: four items max. Docs stays reachable from the footer.
 const NAV_ITEMS = [
+  { href: "/start-here", label: "Start here" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/docs", label: "Docs" },
   { href: "/faq", label: "FAQ" },
 ];
 

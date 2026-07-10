@@ -57,6 +57,12 @@ npm run typecheck
 
 ## Where things live
 
+- `content/start-here.ts` + `app/start-here/` — the beginner hub: five
+  demo-first setup guides (broker, VPS, MT5, EA install, first run) with
+  HowTo/FAQPage/ItemList JSON-LD, URL-param progress state (no
+  localStorage), and owner-supplied screenshot slots. Capture the shots in
+  `SHOT-LIST.md`, drop them into `public/images/start-here/`, redeploy —
+  placeholders swap to real images automatically.
 - `lib/site.ts` — single source of truth for entity data (product name,
   company, canonical URL, the one-line description used identically in
   llms.txt / JSON-LD / meta / footer) and the footer risk warning.
@@ -92,4 +98,8 @@ npm run typecheck
 5. Design system is "Broadsheet Terminal": warm paper ground, ink text,
    Fraunces serif display, cobalt accent; product UI artifacts render as
    dark terminal windows (`term` tokens in `tailwind.config.ts`).
+6. /start-here: confirm IC Markets as the featured broker and whether an
+   IB/affiliate link is used (must be disclosed on-page if so); choose the
+   VPS providers to feature (same disclosure rule); capture the screenshots
+   in `SHOT-LIST.md` on your own (demo) accounts.
 6. Legal drafts in `content/legal.ts` need a solicitor review.
