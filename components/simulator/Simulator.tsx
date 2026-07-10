@@ -106,8 +106,13 @@ function drawChart(
   ctx.stroke();
 }
 
-export function Simulator() {
-  const [params, setParams] = useState(DEFAULTS);
+export function Simulator({
+  initial,
+}: {
+  /** Seed with real account values for dashboard what-if previews. */
+  initial?: Partial<typeof DEFAULTS>;
+}) {
+  const [params, setParams] = useState({ ...DEFAULTS, ...initial });
   const [result, setResult] = useState<SimResult | null>(null);
   const [busy, setBusy] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -251,4 +251,91 @@ int OnInit()
       },
     ],
   },
+  {
+    slug: "telemetry-and-settings-sync-mql5",
+    title: "How Grit Markets telemetry and settings sync work (with MQL5 reference)",
+    description:
+      "What the EA sends to the dashboard, how the HMAC-signed telemetry channel works, the settings-sync protocol, and the MQL5 reference implementation.",
+    intro:
+      "Alongside licence validation, the EA can push telemetry to your dashboard: an account snapshot every five minutes plus closed trades as they happen. This page documents exactly what is transmitted, how the channel is authenticated, and how remote settings changes are applied safely. Telemetry never includes broker credentials of any kind, and it is optional: the EnableTelemetry input defaults to true, and turning it off disables the dashboard while licensing keeps working.",
+    steps: [
+      {
+        name: "Understand what is transmitted",
+        text: "Each push contains a snapshot (balance, equity, margin, free margin, margin level, floating profit and open-position count), any trades closed since the last acknowledged ticket, and the version number of the settings the EA is currently running. Nothing else leaves your terminal: no passwords, no investor logins, no personal data beyond the MT5 account number the licence is bound to.",
+      },
+      {
+        name: "Issue your telemetry secret in the dashboard",
+        text: "In Licenses and Downloads, issue the telemetry secret and paste it into the EA's TelemetrySecret input. The secret is shown once; every telemetry request is signed with it (HMAC-SHA256 over the payload) so nobody can push fake data into your dashboard. Regenerating the secret invalidates the old one immediately.",
+      },
+      {
+        name: "How settings sync applies changes safely",
+        text: "When you submit a settings version from the dashboard, it is queued as pending. The EA sees it in the response to a telemetry push, but applies it only when no recovery sequence is open — flat or base level only — never mid-ladder. On its next push the EA reports the new version and the dashboard marks it applied. If the account never reaches a flat state, the change simply waits; the dashboard shows this honestly.",
+      },
+      {
+        name: "Cadence and failure behaviour",
+        text: "The EA pushes every five minutes while running and immediately when a trade closes. If the platform is unreachable, the EA keeps trading on its current settings and retries later; telemetry is a reporting channel, and no trading decision ever depends on it. The ea-offline alert in the dashboard fires when an active account has been silent for more than two hours.",
+      },
+    ],
+    notes: [
+      "The endpoint is https://gritmarkets.com/api/telemetry - covered by the same https://gritmarkets.com WebRequest whitelist entry used for licence validation.",
+      "Telemetry contents, retention (24 months rolling) and lawful basis are documented in the Privacy Policy.",
+    ],
+    codeBlocks: [
+      {
+        title: "Reference MQL5 telemetry push",
+        language: "mql5",
+        code: `// Grit Markets - telemetry reference (MQL5). Same WebRequest whitelist
+// entry as licence validation: https://gritmarkets.com
+#define GM_TELEMETRY_ENDPOINT "https://gritmarkets.com/api/telemetry"
+
+input bool   EnableTelemetry  = true;
+input string TelemetrySecret  = ""; // issued once in the dashboard
+
+// Requires an HMAC-SHA256 implementation (see MQL5 standard examples).
+string GM_HmacSha256Hex(const string body, const string secret_key);
+
+bool GM_PushTelemetry(const string license_key, const int settings_version)
+  {
+   if(!EnableTelemetry || TelemetrySecret == "")
+      return(false);
+
+   string body = StringFormat(
+      "{\"license_key\":\"%s\",\"mt5_account\":\"%I64d\",\"is_demo\":%s,"
+      "\"account_currency\":\"%s\",\"settings_version\":%d,"
+      "\"snapshot\":{\"balance\":%.2f,\"equity\":%.2f,\"margin\":%.2f,"
+      "\"free_margin\":%.2f,\"margin_level_pct\":%.2f,"
+      "\"open_positions_count\":%d,\"floating_pl\":%.2f},"
+      "\"trades\":[]}",
+      license_key,
+      AccountInfoInteger(ACCOUNT_LOGIN),
+      AccountInfoInteger(ACCOUNT_TRADE_MODE) == ACCOUNT_TRADE_MODE_DEMO ? "true" : "false",
+      AccountInfoString(ACCOUNT_CURRENCY),
+      settings_version,
+      AccountInfoDouble(ACCOUNT_BALANCE),
+      AccountInfoDouble(ACCOUNT_EQUITY),
+      AccountInfoDouble(ACCOUNT_MARGIN),
+      AccountInfoDouble(ACCOUNT_MARGIN_FREE),
+      AccountInfoDouble(ACCOUNT_MARGIN_LEVEL),
+      PositionsTotal(),
+      AccountInfoDouble(ACCOUNT_PROFIT));
+
+   string sig = GM_HmacSha256Hex(body, TelemetrySecret);
+   string headers = "Content-Type: application/json\r\nX-GM-Signature: " + sig + "\r\n";
+
+   char request[]; char response[]; string response_headers;
+   StringToCharArray(body, request, 0, StringLen(body), CP_UTF8);
+   int status = WebRequest("POST", GM_TELEMETRY_ENDPOINT, headers,
+                           5000, request, response, response_headers);
+   if(status != 200)
+      return(false); // keep trading; retry on the next timer tick
+
+   string json = CharArrayToString(response, 0, WHOLE_ARRAY, CP_UTF8);
+   // If json contains \"pending_settings\":{...}: store it and apply ONLY
+   // when flat (no open sequence), then echo the new settings_version on
+   // the next push so the dashboard marks it applied.
+   return(true);
+  }`,
+      },
+    ],
+  },
 ];
