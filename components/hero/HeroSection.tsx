@@ -46,9 +46,29 @@ function useCanAnimate(): boolean {
   return ok;
 }
 
+// Auto-tour: hold each formation this long before advancing (the morph
+// itself takes ~1.4s on top). A manual selection hands control to the visitor.
+const AUTO_CYCLE_MS = 3000;
+
 export function HeroSection() {
   const [formation, setFormation] = useState<FormationKind>("flow");
+  const [autoTour, setAutoTour] = useState(true);
   const animate = useCanAnimate();
+
+  useEffect(() => {
+    if (!animate || !autoTour) return;
+    const id = setInterval(() => {
+      setFormation(
+        (f) => FORMATIONS[(FORMATIONS.indexOf(f) + 1) % FORMATIONS.length]
+      );
+    }, AUTO_CYCLE_MS);
+    return () => clearInterval(id);
+  }, [animate, autoTour]);
+
+  const selectFormation = (f: FormationKind) => {
+    setAutoTour(false);
+    setFormation(f);
+  };
 
   return (
     <section className="relative flex h-[100svh] min-h-[640px] flex-col overflow-hidden">
@@ -92,7 +112,7 @@ export function HeroSection() {
               key={f}
               type="button"
               aria-pressed={formation === f}
-              onClick={() => setFormation(f)}
+              onClick={() => selectFormation(f)}
               className={`font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
                 formation === f
                   ? "text-accent"
