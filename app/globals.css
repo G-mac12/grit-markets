@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    @apply bg-ink text-fg antialiased;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply font-sans text-base;
+  }
+
+  ::selection {
+    @apply bg-accent text-ink;
+  }
+
+  /* Tabular numerals wherever data appears */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer components {
+  /* Micro label — terminal metadata style */
+  .label-micro {
+    @apply font-mono text-micro uppercase tracking-[0.14em] text-fg-faint;
+  }
+
+  .rule {
+    @apply border-t border-line;
+  }
+
+  .panel {
+    @apply border border-line bg-ink-800;
+  }
+
+  /* Character-split nav hover (K95-pattern): duplicate glyph column slides in */
+  .char-link {
+    @apply relative inline-block overflow-hidden align-top;
+  }
+  .char-link .char {
+    @apply relative inline-block whitespace-pre transition-transform duration-300 ease-terminal;
+    transition-delay: calc(var(--char-i) * 18ms);
+  }
+  .char-link .char::after {
+    content: attr(data-char);
+    @apply absolute left-0 top-full text-accent;
+  }
+  .char-link:hover .char,
+  .char-link:focus-visible .char {
+    transform: translateY(-100%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .char-link:hover .char,
+    .char-link:focus-visible .char {
+      transform: none;
+    }
+    .char-link:hover,
+    .char-link:focus-visible {
+      @apply text-accent;
+    }
+  }
+
+  /* Subtle scanline texture for panels that want it */
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 3px,
+      rgba(255, 255, 255, 0.012) 3px,
+      rgba(255, 255, 255, 0.012) 4px
+    );
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-3 border border-accent bg-accent px-6 py-3 font-mono text-sm uppercase tracking-[0.08em] text-ink transition-colors duration-200 ease-terminal hover:bg-transparent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-3 border border-line-strong px-6 py-3 font-mono text-sm uppercase tracking-[0.08em] text-fg transition-colors duration-200 ease-terminal hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
