@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -8,10 +8,11 @@ import { JsonLd } from "@/components/JsonLd";
 import { organizationJsonLd, softwareApplicationJsonLd } from "@/lib/jsonld";
 import { SITE } from "@/lib/site";
 
-const display = Space_Grotesk({
+const display = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
+  axes: ["opsz", "SOFT", "WONK"],
 });
 const sans = Inter({
   subsets: ["latin"],
@@ -62,7 +63,7 @@ export default function RootLayout({
         <JsonLd data={softwareApplicationJsonLd()} />
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:bg-accent focus:px-4 focus:py-2 focus:text-ink"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
         >
           Skip to content
         </a>

@@ -33,7 +33,7 @@ export default function HomePage() {
       {/* Martingale simulator — the honesty centrepiece */}
       <section
         id="simulator"
-        className="border-y border-line bg-ink-850 py-24 md:py-32"
+        className="border-y border-line bg-paper-dark py-24 md:py-32"
       >
         <div className="mx-auto max-w-site px-5 md:px-10">
           <p className="label-micro mb-4 text-accent">Stress-test before you subscribe</p>
@@ -69,7 +69,7 @@ export default function HomePage() {
       </section>
 
       {/* Pricing teaser */}
-      <section className="border-y border-line bg-ink-850 py-24 md:py-32">
+      <section className="border-y border-line bg-paper-dark py-24 md:py-32">
         <div className="mx-auto max-w-site px-5 md:px-10">
           <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
             <div>

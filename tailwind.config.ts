@@ -1,12 +1,13 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Grit Markets — "Quant Terminal" design tokens.
+ * Grit Markets — "Broadsheet Terminal" design tokens (v2).
  *
- * Accent direction: SIGNAL AMBER (CRT-terminal amber) is the committed accent.
- * The alternative candidate, electric green (#2BD576), is kept below as
- * `accent-alt` so the owner can compare both live; swap the two values to
- * flip the whole system. [OWNER INPUT: confirm amber vs green]
+ * Deliberate departure from the dark graphite/amber system (too close to
+ * gritagility.com): warm paper ground, near-black ink, serif display type,
+ * single cobalt accent. Product UI artifacts (dashboard preview, lifecycle
+ * panels) remain dark "terminal windows" via the `term` scale — the page is
+ * editorial, the product is a screen.
  */
 const config: Config = {
   content: [
@@ -18,35 +19,44 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Base graphite scale
-        ink: {
-          DEFAULT: "#0A0B0D", // page background
-          900: "#0A0B0D",
-          850: "#0D0F12", // alt section background
-          800: "#101216", // panel
-          700: "#16191F", // elevated panel
-          600: "#1D2129", // hover surface
+        // Editorial page ground
+        paper: {
+          DEFAULT: "#F4F1EA", // page background — warm bone
+          dark: "#ECE7DC", // alt section background
+          card: "#FBFAF7", // raised card
         },
-        line: {
-          DEFAULT: "#23262E", // 1px rules
-          strong: "#343945",
+        ink: {
+          DEFAULT: "#161513", // primary text / dark blocks (footer)
+          soft: "#232019",
         },
         fg: {
-          DEFAULT: "#E8EAED", // primary text
-          muted: "#9BA1AC", // secondary text (slate)
-          faint: "#5D636E", // metadata / labels
+          DEFAULT: "#161513", // primary text
+          muted: "#57524A", // secondary text — warm grey
+          faint: "#8F897C", // metadata / labels
+        },
+        line: {
+          DEFAULT: "#D9D3C6", // hairline rules on paper
+          strong: "#B4AC9B",
         },
         accent: {
-          DEFAULT: "#FFB300", // signal amber
-          dim: "#B37E00",
-          alt: "#2BD576", // electric green candidate (unused unless swapped)
+          DEFAULT: "#1D35E0", // cobalt — light surfaces
+          bright: "#5E71FF", // cobalt lifted for dark terminal surfaces
         },
-        // P&L semantics — only ever used inside data readouts
-        gain: "#3DD68C",
-        loss: "#E5484D",
+        // Dark terminal surfaces (product UI artifacts only)
+        term: {
+          bg: "#0C0D10",
+          panel: "#13151A",
+          line: "#262932",
+          fg: "#E6E8EC",
+          muted: "#9BA1AC",
+          faint: "#5D636E",
+        },
+        // P&L semantics — light-surface and dark-surface variants
+        gain: { DEFAULT: "#0E7A4A", bright: "#3DD68C" },
+        loss: { DEFAULT: "#C0332B", bright: "#F0564F" },
       },
       fontFamily: {
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
@@ -54,15 +64,15 @@ const config: Config = {
         // K95-scale display sizes (clamped fluid)
         "display-xl": [
           "clamp(2.75rem, 9vw, 8.5rem)",
-          { lineHeight: "0.95", letterSpacing: "-0.03em" },
+          { lineHeight: "0.98", letterSpacing: "-0.015em" },
         ],
         "display-lg": [
           "clamp(2.25rem, 6vw, 5.5rem)",
-          { lineHeight: "1", letterSpacing: "-0.025em" },
+          { lineHeight: "1.02", letterSpacing: "-0.01em" },
         ],
         "display-md": [
           "clamp(1.75rem, 4vw, 3.5rem)",
-          { lineHeight: "1.05", letterSpacing: "-0.02em" },
+          { lineHeight: "1.08", letterSpacing: "-0.005em" },
         ],
         micro: ["0.6875rem", { lineHeight: "1.4", letterSpacing: "0.12em" }],
       },

@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   html {
-    @apply bg-ink text-fg antialiased;
+    @apply bg-paper text-fg antialiased;
     scroll-behavior: smooth;
   }
 
@@ -30,7 +30,7 @@
   }
 
   ::selection {
-    @apply bg-accent text-ink;
+    @apply bg-accent text-paper;
   }
 
   /* Tabular numerals wherever data appears */
@@ -41,7 +41,7 @@
 }
 
 @layer components {
-  /* Micro label — terminal metadata style */
+  /* Micro label — broadsheet metadata style */
   .label-micro {
     @apply font-mono text-micro uppercase tracking-[0.14em] text-fg-faint;
   }
@@ -50,8 +50,14 @@
     @apply border-t border-line;
   }
 
+  /* Light editorial card */
   .panel {
-    @apply border border-line bg-ink-800;
+    @apply border border-line bg-paper-card;
+  }
+
+  /* Dark terminal window — product UI artifacts only */
+  .term-panel {
+    @apply border border-term-line bg-term-panel;
   }
 
   /* Character-split nav hover (K95-pattern): duplicate glyph column slides in */
@@ -81,7 +87,7 @@
     }
   }
 
-  /* Subtle scanline texture for panels that want it */
+  /* Subtle scanline texture for dark terminal panels */
   .scanlines {
     background-image: repeating-linear-gradient(
       to bottom,
@@ -93,7 +99,7 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-3 border border-accent bg-accent px-6 py-3 font-mono text-sm uppercase tracking-[0.08em] text-ink transition-colors duration-200 ease-terminal hover:bg-transparent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    @apply inline-flex items-center gap-3 border border-ink bg-ink px-6 py-3 font-mono text-sm uppercase tracking-[0.08em] text-paper transition-colors duration-200 ease-terminal hover:border-accent hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
   }
 
   .btn-ghost {

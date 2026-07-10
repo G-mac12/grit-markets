@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* The level math — honest exponential table */}
-      <section className="border-y border-line bg-ink-850 py-24">
+      <section className="border-y border-line bg-paper-dark py-24">
         <div className="mx-auto grid max-w-site gap-12 px-5 md:grid-cols-2 md:px-10">
           <Reveal>
             <p className="label-micro mb-4 text-accent">The sizing math</p>
@@ -154,7 +154,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* What can go wrong */}
-      <section className="border-y border-line bg-ink-850 py-24">
+      <section className="border-y border-line bg-paper-dark py-24">
         <div className="mx-auto max-w-site px-5 md:px-10">
           <p className="label-micro mb-4 text-loss">What can go wrong</p>
           <h2 className="max-w-3xl font-display text-display-md font-medium">

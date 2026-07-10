@@ -56,14 +56,15 @@ export function HeroSection() {
         {animate ? <TapeCanvas formation={formation} /> : <HeroFallback />}
       </div>
       {/* readability scrim */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/30 via-transparent to-ink" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-paper/40 via-transparent to-paper" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-site flex-1 flex-col justify-center px-5 pt-20 md:px-10">
         <p className="label-micro mb-6">
           {SITE.companyName} · {SITE.companyNumber}
         </p>
         <h1 className="max-w-5xl font-display text-display-xl font-medium text-balance">
-          A Martingale engine for MetaTrader&nbsp;5.
+          A <em className="italic text-accent">Martingale</em> engine for
+          MetaTrader&nbsp;5.
         </h1>
         <p className="mt-8 max-w-xl text-lg leading-relaxed text-fg-muted">
           Compounding position sizing, bounded by hard risk controls — and a
@@ -95,7 +96,7 @@ export function HeroSection() {
               className={`font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
                 formation === f
                   ? "text-accent"
-                  : "text-fg-faint hover:text-fg-muted"
+                  : "text-fg-faint hover:text-fg"
               }`}
             >
               {formation === f ? "● " : "○ "}

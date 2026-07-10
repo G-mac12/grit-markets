@@ -46,7 +46,7 @@ function LadderBars({ active }: { active: boolean }) {
       {widths.map((w, i) => (
         <div
           key={i}
-          className="h-2 bg-accent transition-all duration-500 ease-terminal"
+          className="h-2 bg-accent-bright transition-all duration-500 ease-terminal"
           style={{
             width: `${w}%`,
             opacity: active ? 0.35 + i * 0.15 : 0.12,
@@ -69,11 +69,19 @@ function Panel({
 }) {
   return (
     <div
-      className={`panel p-4 transition-all duration-300 ease-terminal md:p-5 ${
-        active ? "border-accent/70 opacity-100" : "opacity-40"
+      className={`term-panel p-4 transition-all duration-300 ease-terminal md:p-5 ${
+        active
+          ? "border-accent-bright/70 opacity-100 shadow-[0_18px_44px_-20px_rgba(22,21,19,0.5)]"
+          : "opacity-55"
       }`}
     >
-      <p className={`label-micro mb-3 ${active ? "text-accent" : ""}`}>{title}</p>
+      <p
+        className={`label-micro mb-3 ${
+          active ? "text-accent-bright" : "text-term-faint"
+        }`}
+      >
+        {title}
+      </p>
       {children}
     </div>
   );
@@ -83,43 +91,45 @@ function StepPanels({ step }: { step: number }) {
   return (
     <div className="grid grid-cols-2 gap-3 md:gap-4">
       <Panel title="Scanner" active={step === 0}>
-        <div className="space-y-2 font-mono text-xs text-fg-muted">
+        <div className="space-y-2 font-mono text-xs text-term-muted">
           <p>EURUSD · M15</p>
-          <p className={step >= 0 ? "text-fg" : ""}>
-            session <span className="text-gain">OPEN</span> · spread 0.6
+          <p className={step >= 0 ? "text-term-fg" : ""}>
+            session <span className="text-gain-bright">OPEN</span> · spread 0.6
           </p>
           <p>
             signal{" "}
-            <span className={step >= 1 ? "text-accent" : "text-fg-faint"}>
+            <span
+              className={step >= 1 ? "text-accent-bright" : "text-term-faint"}
+            >
               {step >= 1 ? "QUALIFIED" : "SCANNING…"}
             </span>
           </p>
         </div>
       </Panel>
       <Panel title="Order ticket" active={step === 1}>
-        <div className="space-y-2 font-mono text-xs text-fg-muted">
+        <div className="space-y-2 font-mono text-xs text-term-muted">
           <p>
-            <span className="text-gain">BUY</span> 0.01 lots @ 1.0842
+            <span className="text-gain-bright">BUY</span> 0.01 lots @ 1.0842
           </p>
           <p>base lot — level 1 of sequence</p>
-          <p className={step >= 1 ? "text-fg" : "text-fg-faint"}>
+          <p className={step >= 1 ? "text-term-fg" : "text-term-faint"}>
             status {step >= 1 ? "FILLED" : "—"}
           </p>
         </div>
       </Panel>
       <Panel title="Recovery ladder" active={step === 2}>
         <LadderBars active={step >= 2} />
-        <p className="mt-3 font-mono text-micro uppercase tracking-[0.12em] text-fg-faint">
+        <p className="mt-3 font-mono text-micro uppercase tracking-[0.12em] text-term-faint">
           size compounds per level
         </p>
       </Panel>
       <Panel title="Equity guardian" active={step === 3}>
-        <div className="space-y-2 font-mono text-xs text-fg-muted">
+        <div className="space-y-2 font-mono text-xs text-term-muted">
           <p>
-            max level <span className="text-fg">6</span> · equity stop{" "}
-            <span className="text-accent">−8.0%</span>
+            max level <span className="text-term-fg">6</span> · equity stop{" "}
+            <span className="text-accent-bright">−8.0%</span>
           </p>
-          <p className={step >= 3 ? "text-accent" : "text-fg-faint"}>
+          <p className={step >= 3 ? "text-accent-bright" : "text-term-faint"}>
             {step >= 3 ? "SEQUENCE FLATTENED — LIMIT HIT" : "ARMED"}
           </p>
         </div>

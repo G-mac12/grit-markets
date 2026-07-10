@@ -14,7 +14,7 @@ export function SpecCards() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-          className="panel scanlines flex flex-col p-5"
+          className="panel flex flex-col p-5"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-display text-base font-medium">{card.name}</h3>

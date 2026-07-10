@@ -29,7 +29,7 @@ export function CookieConsent() {
     <div
       role="region"
       aria-label="Cookie consent"
-      className="fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-xl border border-line-strong bg-ink-700 p-5 shadow-2xl md:left-auto md:right-6"
+      className="fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-xl border border-line-strong bg-paper-card p-5 shadow-2xl md:left-auto md:right-6"
     >
       <p className="label-micro mb-2">Cookies</p>
       <p className="text-sm leading-relaxed text-fg-muted">

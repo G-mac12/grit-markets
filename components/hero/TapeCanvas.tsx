@@ -89,13 +89,13 @@ function ParticleField({ formation }: { formation: FormationKind }) {
           <bufferAttribute attach="attributes-size" args={[sizes, 1]} />
         </bufferGeometry>
         <pointsMaterial
-          color="#FFB300"
-          size={0.042}
+          color="#1D35E0"
+          size={0.05}
           sizeAttenuation
           transparent
-          opacity={0.8}
+          opacity={0.55}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={THREE.NormalBlending}
         />
       </points>
     </group>

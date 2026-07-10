@@ -67,7 +67,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         </ol>
 
         {guide.notes && guide.notes.length > 0 && (
-          <div className="mt-14 max-w-3xl border border-line bg-ink-800 p-5">
+          <div className="mt-14 max-w-3xl panel p-5">
             <p className="label-micro mb-3 text-accent">Notes</p>
             <ul className="space-y-2">
               {guide.notes.map((n, i) => (

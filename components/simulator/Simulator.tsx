@@ -66,7 +66,7 @@ function drawChart(
   const y = (v: number) => h - (v / yMax) * (h - 12) - 6;
 
   // grid
-  ctx.strokeStyle = "rgba(255,255,255,0.05)";
+  ctx.strokeStyle = "rgba(22,21,19,0.07)";
   ctx.lineWidth = 1;
   for (let g = 1; g < 4; g++) {
     ctx.beginPath();
@@ -75,7 +75,7 @@ function drawChart(
     ctx.stroke();
   }
   // starting balance reference
-  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.strokeStyle = "rgba(22,21,19,0.3)";
   ctx.setLineDash([4, 5]);
   ctx.beginPath();
   ctx.moveTo(0, y(startBalance));
@@ -88,20 +88,20 @@ function drawChart(
   result.p90.forEach((v, i) => (i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v))));
   for (let i = n - 1; i >= 0; i--) ctx.lineTo(x(i), y(result.p10[i]));
   ctx.closePath();
-  ctx.fillStyle = "rgba(255,179,0,0.09)";
+  ctx.fillStyle = "rgba(29,53,224,0.08)";
   ctx.fill();
 
   // sample bad run
   ctx.beginPath();
   result.sample.forEach((v, i) => (i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v))));
-  ctx.strokeStyle = "rgba(229,72,77,0.75)";
+  ctx.strokeStyle = "rgba(192,51,43,0.75)";
   ctx.lineWidth = 1.25;
   ctx.stroke();
 
   // median
   ctx.beginPath();
   result.p50.forEach((v, i) => (i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v))));
-  ctx.strokeStyle = "#FFB300";
+  ctx.strokeStyle = "#1D35E0";
   ctx.lineWidth = 1.75;
   ctx.stroke();
 }
@@ -197,7 +197,7 @@ export function Simulator() {
                 onChange={(e) =>
                   setParams((p) => ({ ...p, [c.key]: Number(e.target.value) }))
                 }
-                className="w-full accent-[#FFB300]"
+                className="w-full accent-[#1D35E0]"
               />
             </div>
           ))}
@@ -210,7 +210,7 @@ export function Simulator() {
         </form>
 
         <div>
-          <div className="relative h-64 border border-line bg-ink-850 md:h-80">
+          <div className="relative h-64 border border-line bg-white md:h-80">
             <canvas
               ref={canvasRef}
               className="h-full w-full"

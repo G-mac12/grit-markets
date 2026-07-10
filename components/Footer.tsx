@@ -19,25 +19,25 @@ const LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-ink-850">
+    <footer className="bg-ink text-paper">
       <div className="mx-auto max-w-site px-5 py-14 md:px-10">
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr]">
           <div>
-            <p className="font-display text-sm font-bold uppercase tracking-[0.18em]">
-              Grit Markets
+            <p className="font-display text-2xl font-semibold tracking-tight">
+              Grit Markets<span className="text-accent-bright">.</span>
             </p>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-fg-muted">
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-paper/70">
               {SITE.description}
             </p>
-            <p className="mt-4 font-mono text-xs text-fg-faint">
+            <p className="mt-4 font-mono text-xs text-paper/50">
               {SITE.companyName} · Company {SITE.companyNumber} · Registered in
               Scotland
             </p>
-            <p className="mt-1 font-mono text-xs text-fg-faint">
+            <p className="mt-1 font-mono text-xs text-paper/50">
               {/* [OWNER INPUT: confirm support email] */}
               <a
                 href={`mailto:${SITE.supportEmail}`}
-                className="hover:text-accent"
+                className="hover:text-accent-bright"
               >
                 {SITE.supportEmail}
               </a>
@@ -45,13 +45,13 @@ export function Footer() {
           </div>
 
           <nav aria-label="Site">
-            <p className="label-micro mb-4">Site</p>
+            <p className="label-micro mb-4 text-paper/40">Site</p>
             <ul className="space-y-2">
               {FOOTER_LINKS.map((l) => (
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-sm text-fg-muted transition-colors hover:text-accent"
+                    className="text-sm text-paper/70 transition-colors hover:text-accent-bright"
                   >
                     {l.label}
                   </Link>
@@ -61,13 +61,13 @@ export function Footer() {
           </nav>
 
           <nav aria-label="Legal">
-            <p className="label-micro mb-4">Legal</p>
+            <p className="label-micro mb-4 text-paper/40">Legal</p>
             <ul className="space-y-2">
               {LEGAL_LINKS.map((l) => (
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-sm text-fg-muted transition-colors hover:text-accent"
+                    className="text-sm text-paper/70 transition-colors hover:text-accent-bright"
                   >
                     {l.label}
                   </Link>
@@ -77,17 +77,17 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-12 border border-line bg-ink-800 p-5">
-          <p className="label-micro mb-2 text-accent">Risk warning</p>
-          <p className="text-sm leading-relaxed text-fg-muted">{RISK_WARNING}</p>
+        <div className="mt-12 border border-paper/20 p-5">
+          <p className="label-micro mb-2 text-accent-bright">Risk warning</p>
+          <p className="text-sm leading-relaxed text-paper/70">{RISK_WARNING}</p>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-          <p className="font-mono text-micro uppercase tracking-[0.14em] text-fg-faint">
-            {SITE.metadataStrip} — GRAPHITE / AMBER — © {new Date().getFullYear()}{" "}
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-paper/15 pt-5">
+          <p className="font-mono text-micro uppercase tracking-[0.14em] text-paper/40">
+            {SITE.metadataStrip} — PAPER / COBALT — © {new Date().getFullYear()}{" "}
             {SITE.companyName}
           </p>
-          <p className="font-mono text-micro uppercase tracking-[0.14em] text-fg-faint">
+          <p className="font-mono text-micro uppercase tracking-[0.14em] text-paper/40">
             gritmarkets.com
           </p>
         </div>

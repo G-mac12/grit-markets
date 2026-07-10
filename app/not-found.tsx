@@ -9,20 +9,20 @@ export default function NotFound() {
         className="w-full max-w-xl"
         preserveAspectRatio="xMidYMid meet"
       >
-        <line x1="0" y1="130" x2="600" y2="130" stroke="#23262E" strokeWidth="1" />
+        <line x1="0" y1="130" x2="600" y2="130" stroke="#D9D3C6" strokeWidth="1" />
         {/* equity curve: grinds up, cliff, flatline */}
         <polyline
           points="0,110 40,104 70,108 110,96 150,99 190,88 230,92 260,80 300,84 330,70 355,74 375,60 395,130 600,130"
           fill="none"
-          stroke="#FFB300"
+          stroke="#1D35E0"
           strokeWidth="2"
           strokeLinejoin="round"
         />
-        <circle cx="395" cy="130" r="3.5" fill="#E5484D" />
+        <circle cx="395" cy="130" r="3.5" fill="#C0332B" />
         <text
           x="420"
           y="122"
-          fill="#5D636E"
+          fill="#8F897C"
           fontSize="11"
           fontFamily="var(--font-mono), monospace"
           letterSpacing="2"

@@ -1,7 +1,7 @@
 /**
  * Static fallback for the WebGL hero: the Martingale ladder motif as SVG.
  * Shown when WebGL is unavailable, on reduced-motion preference, or while
- * the 3D bundle lazy-loads.
+ * the 3D bundle lazy-loads. Ink-on-paper halftone treatment.
  */
 export function HeroFallback() {
   const levels = 8;
@@ -13,18 +13,18 @@ export function HeroFallback() {
     <svg
       viewBox="0 0 100 100"
       aria-hidden="true"
-      className="absolute inset-0 h-full w-full opacity-40"
+      className="absolute inset-0 h-full w-full opacity-30"
       preserveAspectRatio="xMidYMid meet"
     >
       {bars.map((b, i) => (
         <rect
           key={i}
-          x={27}
+          x={50 - b.w / 2}
           y={b.y}
           width={b.w}
           height={5}
-          fill="#FFB300"
-          opacity={0.25 + (i / levels) * 0.55}
+          fill="#1D35E0"
+          opacity={0.18 + (i / levels) * 0.5}
         />
       ))}
       {Array.from({ length: 12 }, (_, i) => (
@@ -34,9 +34,9 @@ export function HeroFallback() {
           x2={100}
           y1={4 + i * 2.2}
           y2={4 + i * 2.2}
-          stroke="#FFB300"
+          stroke="#1D35E0"
           strokeWidth={0.14}
-          opacity={0.35}
+          opacity={0.3}
           strokeDasharray={`${1 + ((i * 7) % 5)} ${2 + ((i * 3) % 4)}`}
         />
       ))}

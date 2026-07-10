@@ -89,7 +89,7 @@ export default function PricingPage() {
           ))}
         </ul>
 
-        <div className="mt-14 max-w-2xl border border-line bg-ink-800 p-5">
+        <div className="mt-14 max-w-2xl panel p-5">
           <p className="label-micro mb-2 text-accent">Before you subscribe</p>
           <p className="text-sm leading-relaxed text-fg-muted">
             {RISK_WARNING} Try the{" "}

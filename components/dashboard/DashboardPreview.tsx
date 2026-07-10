@@ -5,7 +5,8 @@ import { SIMULATED_DATA_LABEL } from "@/lib/site";
 
 /**
  * Live-feeling preview of the Phase 2 subscriber dashboard (/account).
- * Real components fed with simulated data — never screenshots. These pieces
+ * Real components fed with simulated data — never screenshots. Rendered as
+ * a dark terminal window framed on the editorial paper page; these pieces
  * are the Phase 2 component library, previewed.
  */
 
@@ -25,13 +26,13 @@ export function StatusPill({
     <span
       className={`inline-flex items-center gap-2 border px-2.5 py-1 font-mono text-micro uppercase tracking-[0.12em] ${
         tone === "active"
-          ? "border-gain/40 text-gain"
-          : "border-accent/40 text-accent"
+          ? "border-gain-bright/40 text-gain-bright"
+          : "border-accent-bright/40 text-accent-bright"
       }`}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${
-          tone === "active" ? "bg-gain" : "bg-accent"
+          tone === "active" ? "bg-gain-bright" : "bg-accent-bright"
         } motion-safe:animate-pulse`}
       />
       {label}
@@ -54,8 +55,8 @@ export function SessionClock() {
     return () => clearInterval(id);
   }, []);
   return (
-    <span className="font-mono text-xs text-fg-faint">
-      {now} <span className="text-fg-faint/70">UTC</span>
+    <span className="font-mono text-xs text-term-faint">
+      {now} <span className="text-term-faint/70">UTC</span>
     </span>
   );
 }
@@ -63,9 +64,9 @@ export function SessionClock() {
 export function EquityReadout({ value }: { value: number }) {
   return (
     <div>
-      <p className="label-micro mb-1">Equity</p>
-      <p className="font-mono text-4xl text-fg md:text-5xl">
-        <span className="text-fg-faint">£</span>
+      <p className="label-micro mb-1 text-term-faint">Equity</p>
+      <p className="font-mono text-4xl text-term-fg md:text-5xl">
+        <span className="text-term-faint">£</span>
         {fmt.format(value)}
       </p>
     </div>
@@ -91,7 +92,7 @@ export function PositionsTable({ rows }: { rows: Row[] }) {
     <div className="overflow-x-auto">
       <table className="w-full font-mono text-xs">
         <thead>
-          <tr className="border-b border-line text-left text-fg-faint">
+          <tr className="border-b border-term-line text-left text-term-faint">
             <th className="py-2 pr-4 font-normal uppercase tracking-[0.1em]">Symbol</th>
             <th className="py-2 pr-4 font-normal uppercase tracking-[0.1em]">Side</th>
             <th className="py-2 pr-4 text-right font-normal uppercase tracking-[0.1em]">Lots</th>
@@ -103,15 +104,23 @@ export function PositionsTable({ rows }: { rows: Row[] }) {
           {rows.map((r, i) => (
             <tr
               key={i}
-              className="border-b border-line/40 text-fg-muted motion-safe:animate-[fadeIn_0.4s_ease]"
+              className="border-b border-term-line/40 text-term-muted motion-safe:animate-[fadeIn_0.4s_ease]"
             >
-              <td className="py-2 pr-4 text-fg">{r.symbol}</td>
-              <td className={`py-2 pr-4 ${r.side === "BUY" ? "text-gain" : "text-loss"}`}>
+              <td className="py-2 pr-4 text-term-fg">{r.symbol}</td>
+              <td
+                className={`py-2 pr-4 ${
+                  r.side === "BUY" ? "text-gain-bright" : "text-loss-bright"
+                }`}
+              >
                 {r.side}
               </td>
               <td className="py-2 pr-4 text-right">{r.lots.toFixed(2)}</td>
               <td className="py-2 pr-4 text-right">{r.entry.toFixed(4)}</td>
-              <td className={`py-2 text-right ${r.pnl >= 0 ? "text-gain" : "text-loss"}`}>
+              <td
+                className={`py-2 text-right ${
+                  r.pnl >= 0 ? "text-gain-bright" : "text-loss-bright"
+                }`}
+              >
                 {r.pnl >= 0 ? "+" : ""}
                 {r.pnl.toFixed(2)}
               </td>
@@ -144,14 +153,17 @@ export function DashboardPreview() {
   const maxLevel = 2;
 
   return (
-    <div className="panel scanlines relative p-5 md:p-7" aria-label="Simulated dashboard preview">
-      <p className="absolute right-3 top-3 border border-accent/50 px-2 py-1 font-mono text-micro uppercase tracking-[0.12em] text-accent">
+    <div
+      className="term-panel scanlines relative p-5 shadow-[0_24px_60px_-24px_rgba(22,21,19,0.45)] md:p-7"
+      aria-label="Simulated dashboard preview"
+    >
+      <p className="absolute bottom-3 right-3 border border-accent-bright/50 px-2 py-1 font-mono text-micro uppercase tracking-[0.12em] text-accent-bright">
         Simulated data
       </p>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-term-line pb-4">
         <div className="flex items-center gap-4">
-          <p className="font-display text-xs font-bold uppercase tracking-[0.18em]">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-term-fg">
             Grit Markets — Account
           </p>
           <StatusPill label="License active" />
@@ -164,35 +176,39 @@ export function DashboardPreview() {
           <EquityReadout value={equity} />
           <dl className="grid grid-cols-2 gap-4 font-mono text-xs">
             <div>
-              <dt className="label-micro">Floating P/L</dt>
-              <dd className={floating >= 0 ? "mt-1 text-gain" : "mt-1 text-loss"}>
+              <dt className="label-micro text-term-faint">Floating P/L</dt>
+              <dd
+                className={
+                  floating >= 0 ? "mt-1 text-gain-bright" : "mt-1 text-loss-bright"
+                }
+              >
                 {floating >= 0 ? "+" : ""}
                 {floating.toFixed(2)}
               </dd>
             </div>
             <div>
-              <dt className="label-micro">Recovery level</dt>
-              <dd className="mt-1 text-fg">
-                {maxLevel} <span className="text-fg-faint">/ 6 max</span>
+              <dt className="label-micro text-term-faint">Recovery level</dt>
+              <dd className="mt-1 text-term-fg">
+                {maxLevel} <span className="text-term-faint">/ 6 max</span>
               </dd>
             </div>
             <div>
-              <dt className="label-micro">Equity stop</dt>
-              <dd className="mt-1 text-accent">ARMED −8.0%</dd>
+              <dt className="label-micro text-term-faint">Equity stop</dt>
+              <dd className="mt-1 text-accent-bright">ARMED −8.0%</dd>
             </div>
             <div>
-              <dt className="label-micro">EA version</dt>
-              <dd className="mt-1 text-fg">v1.0.0</dd>
+              <dt className="label-micro text-term-faint">EA version</dt>
+              <dd className="mt-1 text-term-fg">v1.0.0</dd>
             </div>
           </dl>
         </div>
         <div>
-          <p className="label-micro mb-2">Open positions</p>
+          <p className="label-micro mb-2 text-term-faint">Open positions</p>
           <PositionsTable rows={rows} />
         </div>
       </div>
 
-      <p className="mt-5 border-t border-line pt-3 font-mono text-micro uppercase tracking-[0.12em] text-fg-faint">
+      <p className="mt-5 border-t border-term-line pt-3 font-mono text-micro uppercase tracking-[0.12em] text-term-faint">
         {SIMULATED_DATA_LABEL}
       </p>
     </div>

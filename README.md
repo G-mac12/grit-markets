@@ -61,6 +61,7 @@ npm run typecheck
    currently **omitted entirely**, per the compliance rule.
 4. Support email + company contact details — `lib/site.ts`
    (`support@gritmarkets.com` is a placeholder) and `content/legal.ts`.
-5. Accent decision: signal amber (committed) vs electric green — swap
-   `accent.DEFAULT` with `accent.alt` in `tailwind.config.ts` to compare.
+5. Design system is "Broadsheet Terminal": warm paper ground, ink text,
+   Fraunces serif display, cobalt accent; product UI artifacts render as
+   dark terminal windows (`term` tokens in `tailwind.config.ts`).
 6. Legal drafts in `content/legal.ts` need a solicitor review.
