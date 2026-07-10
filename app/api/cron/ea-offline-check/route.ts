@@ -4,9 +4,10 @@ import { cronAuthorized } from "@/lib/cron";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 /**
- * Hourly: an active account link with an enabled ea_offline alert and no
- * telemetry for >2h fires an alert event (12h dedupe so a dead EA doesn't
- * page every hour).
+ * An active account link with an enabled ea_offline alert and no telemetry
+ * for >2h fires an alert event (12h dedupe so a dead EA doesn't re-page).
+ * Designed to run hourly; currently scheduled DAILY in vercel.json because
+ * Vercel Hobby limits crons to daily — restore "0 * * * *" on the Pro plan.
  */
 export const dynamic = "force-dynamic";
 
