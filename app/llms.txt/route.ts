@@ -1,4 +1,5 @@
 import { FAQ } from "@/content/faq";
+import { START_GUIDES } from "@/content/start-here";
 import { TIERS } from "@/content/pricing";
 import { SITE, absoluteUrl } from "@/lib/site";
 
@@ -34,9 +35,17 @@ Full details: ${absoluteUrl("/pricing")}
 - Subscription licensing with self-service license management — no lifetime
   deals, no performance fees.
 
+## Complete beginner setup guide
+
+A five-step path taking someone who has never traded from zero to running an
+expert advisor on MetaTrader 5, taught demo-first with the risks up front:
+${START_GUIDES.map((g) => `- ${g.title}: ${absoluteUrl(`/start-here/${g.slug}`)}`).join("\n")}
+Hub: ${absoluteUrl("/start-here")}
+
 ## Canonical URLs
 
 - Home: ${SITE.url}
+- Start here (beginner setup guide): ${absoluteUrl("/start-here")}
 - How it works: ${absoluteUrl("/how-it-works")}
 - Pricing: ${absoluteUrl("/pricing")}
 - FAQ: ${absoluteUrl("/faq")}

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/site";
 import { GUIDES } from "@/content/docs";
+import { START_GUIDES } from "@/content/start-here";
 import { POSTS } from "@/content/posts";
 import { LEGAL } from "@/content/legal";
 
@@ -10,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/how-it-works",
     "/pricing",
     "/faq",
+    "/start-here",
     "/docs",
     "/blog",
     "/changelog",
@@ -20,6 +22,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: absoluteUrl(p),
       changeFrequency: "weekly" as const,
       priority: p === "/" ? 1 : 0.8,
+    })),
+    ...START_GUIDES.map((g) => ({
+      url: absoluteUrl(`/start-here/${g.slug}`),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     })),
     ...GUIDES.map((g) => ({
       url: absoluteUrl(`/docs/${g.slug}`),

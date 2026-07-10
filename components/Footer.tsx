@@ -2,6 +2,7 @@ import Link from "next/link";
 import { RISK_WARNING, SITE } from "@/lib/site";
 
 const FOOTER_LINKS = [
+  { href: "/start-here", label: "Start here" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
