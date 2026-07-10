@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     })),
     // draft posts are excluded until published
-    ...POSTS.filter((p) => (p.status as string) !== "draft").map((p) => ({
+    ...POSTS.filter((p) => p.status !== "draft").map((p) => ({
       url: absoluteUrl(`/blog/${p.slug}`),
       changeFrequency: "monthly" as const,
       priority: 0.6,
