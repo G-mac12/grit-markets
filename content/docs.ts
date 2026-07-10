@@ -3,6 +3,12 @@ export interface GuideStep {
   text: string;
 }
 
+export interface GuideCodeBlock {
+  title: string;
+  language: string;
+  code: string;
+}
+
 export interface Guide {
   slug: string;
   title: string;
@@ -10,6 +16,7 @@ export interface Guide {
   intro: string;              // one paragraph
   steps: GuideStep[];         // 5-9 steps
   notes?: string[];           // optional caveats
+  codeBlocks?: GuideCodeBlock[];
 }
 
 export const GUIDES: Guide[] = [
@@ -150,6 +157,98 @@ export const GUIDES: Guide[] = [
       "Tighter settings reduce the size of individual drawdowns but tend to realise small losses more often; looser settings smooth the equity curve while deepening the eventual drawdowns. There is no configuration of Grit Markets that removes the risk of losing the balance on the account it trades.",
       "Where you use backtests to compare configurations, remember they are simulated results. Backtests do not predict live performance.",
       "Nothing in this guide is investment advice. It describes how the software's controls operate so you can make your own decisions.",
+    ],
+  },
+  {
+    slug: "license-validation-mql5",
+    title: "How Grit Markets license validation works (with MQL5 reference)",
+    description:
+      "How the Grit Markets EA validates its licence over HTTPS from MetaTrader 5, what each response means, and the MQL5 reference implementation.",
+    intro:
+      "Grit Markets activates by calling the licence endpoint at https://gritmarkets.com/api/license/validate over HTTPS from inside MetaTrader 5. This page documents exactly what the EA sends, what comes back and how the EA behaves in each case, so you know precisely what the software does on your machine. The reference MQL5 implementation below is the same pattern compiled into the EA; it is published for transparency and for anyone auditing the product before subscribing.",
+    steps: [
+      {
+        name: "The EA sends a validation request on startup",
+        text: "When Grit Markets initialises on a chart, it sends a single HTTPS POST to https://gritmarkets.com/api/license/validate containing three values: your licence key, the MT5 account number the terminal is logged into, and the EA version. Nothing else is transmitted — no trade history, no balance, no personal data beyond the account number the licence binds to.",
+      },
+      {
+        name: "MT5 must allow the WebRequest URL",
+        text: "MetaTrader 5 blocks all outbound web requests unless the destination is whitelisted. Add https://gritmarkets.com under Tools, Options, Expert Advisors, Allow WebRequest for listed URL. If the URL is missing, WebRequest returns error 4014 and the EA shuts down gracefully without trading.",
+      },
+      {
+        name: "The server answers in under a second",
+        text: "The endpoint returns a small JSON document: valid (true or false), reason (a short machine-readable code such as ok, bound, license_suspended or subscription_canceled) and expires (the end of the current billing period). The EA parses this and either arms itself or reports the reason in the Experts log and removes itself from the chart.",
+      },
+      {
+        name: "First use binds your account automatically",
+        text: "The first time a licence validates from a new MT5 account, the account number binds to the licence automatically, up to your tier's account limit. After that, validation from a bound account returns valid immediately. To move the EA to a different account, unbind the old account from your dashboard — self-service rebinds are limited to two per rolling thirty days.",
+      },
+      {
+        name: "Revalidation is periodic, not per-trade",
+        text: "The EA revalidates on a timer measured in hours, never inside trading logic, so a temporary network problem cannot interfere with an open recovery sequence. If validation fails persistently, the EA stops opening new sequences but manages any open positions to their configured close.",
+      },
+    ],
+    notes: [
+      "The endpoint URL never changes. If a future EA version ever asked you to whitelist a different domain, treat it as suspect and contact support.",
+      "Validation telemetry (licence key, MT5 account number, IP address) is logged for licence enforcement, as described in the Privacy Policy.",
+    ],
+    codeBlocks: [
+      {
+        title: "Reference MQL5 validation call",
+        language: "mql5",
+        code: `// Grit Markets — licence validation reference (MQL5)
+// The endpoint below is fixed for the lifetime of the product and must be
+// whitelisted in MT5: Tools > Options > Expert Advisors > Allow WebRequest.
+#define GM_LICENSE_ENDPOINT "https://gritmarkets.com/api/license/validate"
+
+input string InpLicenseKey = ""; // Your GM-XXXXX-XXXXX-XXXXX-XXXXX key
+
+bool GM_ValidateLicense(const string ea_version)
+  {
+   string account = IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN));
+   string body = StringFormat(
+      "{\\"license_key\\":\\"%s\\",\\"mt5_account\\":\\"%s\\",\\"ea_version\\":\\"%s\\"}",
+      InpLicenseKey, account, ea_version);
+
+   char request[];
+   StringToCharArray(body, request, 0, StringLen(body), CP_UTF8);
+
+   char response[];
+   string response_headers;
+   ResetLastError();
+   int status = WebRequest("POST", GM_LICENSE_ENDPOINT,
+                           "Content-Type: application/json\\r\\n",
+                           5000, request, response, response_headers);
+
+   if(status == -1)
+     {
+      // 4014 => URL not whitelisted in Tools > Options > Expert Advisors
+      PrintFormat("Grit Markets: WebRequest failed, error %d. "
+                  "Whitelist %s in MT5 options.",
+                  GetLastError(), GM_LICENSE_ENDPOINT);
+      return(false);
+     }
+
+   string json = CharArrayToString(response, 0, WHOLE_ARRAY, CP_UTF8);
+   bool   valid = (StringFind(json, "\\"valid\\":true") >= 0);
+
+   if(!valid)
+      PrintFormat("Grit Markets: licence rejected — %s", json);
+
+   return(valid);
+  }
+
+int OnInit()
+  {
+   if(!GM_ValidateLicense("1.0.0"))
+     {
+      // graceful shutdown: no trading without a valid licence
+      ExpertRemove();
+      return(INIT_FAILED);
+     }
+   return(INIT_SUCCEEDED);
+  }`,
+      },
     ],
   },
 ];

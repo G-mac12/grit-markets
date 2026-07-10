@@ -66,6 +66,17 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           ))}
         </ol>
 
+        {guide.codeBlocks?.map((block) => (
+          <figure key={block.title} className="mt-14 max-w-3xl">
+            <figcaption className="label-micro mb-3">
+              {block.title} · {block.language}
+            </figcaption>
+            <pre className="term-panel scanlines overflow-x-auto p-5 font-mono text-xs leading-relaxed text-term-fg">
+              <code>{block.code}</code>
+            </pre>
+          </figure>
+        ))}
+
         {guide.notes && guide.notes.length > 0 && (
           <div className="mt-14 max-w-3xl panel p-5">
             <p className="label-micro mb-3 text-accent">Notes</p>

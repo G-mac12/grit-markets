@@ -3,7 +3,8 @@ import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { PRICING_NOTES, TIERS } from "@/content/pricing";
-import { RISK_WARNING, SITE } from "@/lib/site";
+import { RISK_WARNING } from "@/lib/site";
+import { PricingCTA } from "./PricingCTA";
 
 export const metadata: Metadata = {
   title: "Pricing — monthly MT5 EA subscription",
@@ -64,18 +65,18 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <a
-                href={`mailto:${SITE.supportEmail}?subject=Grit Markets ${tier.name} — early access`}
-                className={`${tier.featured ? "btn-primary" : "btn-ghost"} mt-8 justify-center`}
-              >
-                Request early access
-              </a>
+              <PricingCTA
+                tier={tier.id}
+                tierName={tier.name}
+                featured={Boolean(tier.featured)}
+              />
             </article>
           ))}
         </div>
         <p className="mt-6 font-mono text-micro uppercase tracking-[0.14em] text-fg-faint lg:max-w-4xl">
-          Online checkout and instant licensing launch with the customer
-          dashboard. Early access is handled by email until then.
+          Checkout is handled by Stripe. While online billing is being
+          switched on, the subscribe button falls back to early access by
+          email.
         </p>
 
         <ul className="mt-14 max-w-2xl space-y-3">

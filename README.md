@@ -9,10 +9,38 @@ via `next.config.mjs`). Deployed on Vercel.
 
 ## Status
 
-**Phase 1** (marketing site) — built, awaiting owner review and deploy.
+**Phase 1** (marketing site) — built and approved.
 **Phase 2** (accounts, Stripe billing, license provisioning, `/account`
-dashboard, `/api/license/validate`) — fenced; do not start until explicit
-go-ahead.
+dashboard, `/api/license/validate`) — built, env-var gated: every
+integration switches on when its keys are configured, and the site runs in
+Phase 1 mode without them.
+
+## Phase 2 setup (owner)
+
+1. **Supabase** — create a NEW dedicated project. Run
+   `supabase/migrations/0001_init.sql` in the SQL editor. Create a private
+   Storage bucket `ea-builds` and upload builds as
+   `<version>/GritMarkets.ex5`. Enable the Email (magic link) auth provider
+   with redirect URL `https://gritmarkets.com/auth/callback`.
+2. **Stripe** — create two recurring Prices matching `content/pricing.ts`
+   and put their ids in `STRIPE_PRICE_STANDARD` / `STRIPE_PRICE_PRO`. Add a
+   webhook endpoint `https://gritmarkets.com/api/stripe/webhook` for:
+   `checkout.session.completed`, `invoice.payment_failed`,
+   `customer.subscription.updated`, `customer.subscription.deleted`.
+   Enable the Customer Portal.
+3. **Resend** — verify the sending domain, set `RESEND_API_KEY` and
+   `EMAIL_FROM`.
+4. Copy `.env.example` values into Vercel env vars (secrets are server-side
+   only; nothing secret is `NEXT_PUBLIC_`).
+
+Key flows: checkout → webhook creates subscription + license (key
+`GM-XXXXX-…`, crypto-random) + welcome email; payment failure → `past_due`
+with a 3-day grace before validation rejects; cancellation → license
+revoked. The EA validates against
+`POST https://gritmarkets.com/api/license/validate` (fixed URL, documented
+in `/docs/license-validation-mql5` with the MQL5 reference); binding is
+first-use up to the tier's `max_accounts`, rate-limited per key, every call
+logged to `license_events`.
 
 ## Stack
 

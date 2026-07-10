@@ -36,6 +36,11 @@ export function Nav() {
               className="font-mono text-xs uppercase tracking-[0.12em] text-fg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             />
           ))}
+          <CharLink
+            href="/account"
+            text="Account"
+            className="font-mono text-xs uppercase tracking-[0.12em] text-fg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          />
           <Link
             href="/pricing"
             className="border border-ink px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-ink transition-colors duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
