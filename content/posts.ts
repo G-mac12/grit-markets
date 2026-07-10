@@ -9,7 +9,7 @@ export interface Post {
   description: string;        // <=155 chars meta description
   answerFirst: string;        // 40-60 word direct answer opening the article
   date: string;               // ISO date
-  status: "draft";
+  status: "draft" | "published";
   sections: PostSection[];    // 4-6 sections, 2-4 paragraphs each
 }
 
@@ -22,7 +22,7 @@ export const POSTS: Post[] = [
     answerFirst:
       "No, Martingale trading is not safe. Position sizes compound while you are losing, so a sustained adverse move can wipe out an account. Risk controls such as level caps and equity stops can bound the loss on most sequences, but nothing removes the risk. We sell a Martingale EA, and that is still our answer.",
     date: "2026-07-10",
-    status: "draft",
+    status: "published",
     sections: [
       {
         heading: "Why a Martingale vendor is writing this",
@@ -78,7 +78,7 @@ export const POSTS: Post[] = [
     answerFirst:
       "There is no single figure. The capital a Martingale EA needs is determined by your base lot size, the multiplier, the maximum recovery levels, and your broker's margin and leverage terms. Work out the worst-case basket your settings permit, then hold enough to survive it. A simulator makes this arithmetic concrete.",
     date: "2026-07-10",
-    status: "draft",
+    status: "published",
     sections: [
       {
         heading: "Why nobody honest quotes a minimum deposit",
@@ -128,7 +128,7 @@ export const POSTS: Post[] = [
     answerFirst:
       "Before paying for any MT5 expert advisor subscription, get clear answers on seven things: what the strategy actually is, the worst-case risk, what the risk controls do, how backtests are presented, licensing and cancellation terms, the company behind it, and support. A vendor who dodges any of them has answered anyway.",
     date: "2026-07-10",
-    status: "draft",
+    status: "published",
     sections: [
       {
         heading: "Why the EA market rewards scepticism",
