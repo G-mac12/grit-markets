@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { adminConfigured, authConfigured } from "@/lib/env";
+import { checkStepUp } from "@/lib/aal";
 
 const REBINDS_PER_30_DAYS = 2;
 
@@ -32,6 +33,10 @@ export async function rebindLicense(formData: FormData): Promise<void> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  // rebinding is a step-up action: TOTP-verified session required
+  const stepUp = await checkStepUp(supabase);
+  if (stepUp !== "ok") return;
 
   // ownership check under RLS
   const { data: license } = await supabase

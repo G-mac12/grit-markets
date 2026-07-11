@@ -33,6 +33,29 @@ Phase 1 mode without them.
 4. Copy `.env.example` values into Vercel env vars (secrets are server-side
    only; nothing secret is `NEXT_PUBLIC_`).
 
+### Phase 2b — telemetry, dashboard modules, GDPR tooling
+
+Run `supabase/migrations/0002_telemetry_dashboard.sql` after 0001. Extra env
+vars: `TELEMETRY_SECRET_KEY` (32-byte hex, `openssl rand -hex 32`) and
+`CRON_SECRET` (Vercel Cron auth). `vercel.json` schedules three crons:
+daily-rollup (00:05 UTC — daily summaries, skim recommendations, drawdown
+alerts, retention pruning), ea-offline-check (hourly), purge-deleted
+(03:30 — expired 14-day deletion grace periods).
+
+- `/api/telemetry`: HMAC-authenticated EA pushes (per-license secret issued
+  once in the dashboard, AES-GCM at rest); idempotent trade ingestion;
+  settings-sync responses; margin alerts inline. MQL5 reference at
+  `/docs/telemetry-and-settings-sync-mql5`.
+- Dashboard modules under `/account`: Overview, P&L Analytics, Safety
+  Buffer (recommendation ledger — the platform never moves funds), Strategy
+  Settings (bounds-validated, pending→applied EA protocol, audit + revert,
+  what-if Monte Carlo), Costs & True ROI, Alerts, Licenses & Downloads,
+  Account & Security (TOTP 2FA with step-up enforcement, sessions, email
+  preferences, JSON export, 14-day-grace deletion), Billing.
+- Deferred until the owner sets up the accounts: Resend transactional
+  templates, daily digest sending, Klaviyo newsletter + admin review queue.
+- `SECURITY-BREACH-PLAYBOOK.md` documents the UK GDPR incident process.
+
 Key flows: checkout → webhook creates subscription + license (key
 `GM-XXXXX-…`, crypto-random) + welcome email; payment failure → `past_due`
 with a 3-day grace before validation rejects; cancellation → license

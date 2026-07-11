@@ -136,8 +136,17 @@ export const LEGAL: LegalDoc[] = [
         ],
       },
       {
+        heading: "2a. EA telemetry (dashboard service)",
+        paragraphs: [
+          "If you enable telemetry in the EA (the EnableTelemetry input, on by default), the software pushes operational data from your MetaTrader 5 terminal to your dashboard: account balance, equity, margin figures, floating profit, open-position count, and the details of closed trades (symbol, direction, size, prices, times, profit, commission, swap and recovery level). This is processed under our contract with you to provide the dashboard, analytics, safety-buffer and alert features.",
+          "Telemetry never includes broker passwords, investor passwords or any credential; we never ask for them and the platform has no ability to access your broker account or move funds. Each telemetry request is authenticated with a per-licence secret so data can only be written to your own account. Turning telemetry off disables the dashboard features but does not affect licensing.",
+          "Telemetry snapshots are retained for 24 months on a rolling basis; closed-trade records and daily summaries are retained for the lifetime of your account so your analytics remain complete. IP addresses on licensing and telemetry events are kept for 90 days for fraud and abuse prevention (legitimate interests), then deleted.",
+        ],
+      },
+      {
         heading: "3. Who we share data with",
         paragraphs: [
+          "Our processors are: Supabase (database, authentication and telemetry storage), Stripe (payments and billing address), Vercel (hosting), Resend (transactional and service email) and Klaviyo (the optional marketing newsletter list, only if you opt in). Data processing agreements are in place with each. We do not sell personal data.",
           "We share personal data with service providers who process it on our instructions as processors: Stripe for payment processing; [OWNER INPUT: hosting provider for the website, dashboard and licensing servers]; [OWNER INPUT: email delivery provider for service and support email]; and [OWNER INPUT: any other processors, e.g. analytics, support desk, accounting software]. Each processor is bound by a contract meeting the requirements of Article 28 UK GDPR.",
           "We may also disclose data where the law requires it, for example to HMRC in connection with tax records, to law enforcement under a lawful request, or to our professional advisers where necessary to establish or defend legal claims. If our business is sold or reorganised, data may be transferred to the successor subject to this policy. We do not sell personal data, and we do not share it with third parties for their own marketing.",
         ],
@@ -164,6 +173,7 @@ export const LEGAL: LegalDoc[] = [
       {
         heading: "7. Your rights",
         paragraphs: [
+          "You can exercise the key rights yourself from the dashboard without contacting us: Account & Security provides a one-click JSON export of all personal data and telemetry we hold (portability and access), an editable profile (rectification), granular email preference toggles (objection to marketing), and a self-service account deletion flow with a 14-day grace period after which all data is purged, within 30 days at the latest (erasure).",
           "Under the UK GDPR you have the right to: access the personal data we hold about you; have inaccurate data corrected; have data erased where there is no longer a lawful reason to keep it; restrict processing in certain circumstances; object to processing based on legitimate interests; receive the data you provided to us in a portable format; and withdraw consent at any time where processing is based on consent, without affecting processing before the withdrawal.",
           "To exercise any of these rights, contact us at [OWNER INPUT: privacy contact email]. We will respond within one month, and we may need to verify your identity first. Exercising your rights is free of charge except in the limited circumstances where the law permits a fee.",
           "Please note that some data cannot be deleted on request while we have an overriding legal obligation or legitimate ground to keep it, for example billing records we must retain for tax purposes, or validation logs relevant to an active fraud investigation. Where we refuse a request we will explain why.",
