@@ -126,8 +126,8 @@ function StepPanels({ step }: { step: number }) {
       <Panel title="Equity guardian" active={step === 3}>
         <div className="space-y-2 font-mono text-xs text-term-muted">
           <p>
-            max level <span className="text-term-fg">6</span> · equity stop{" "}
-            <span className="text-accent-bright">−8.0%</span>
+            legs cap <span className="text-term-fg">21</span> · equity stop{" "}
+            <span className="text-accent-bright">−20.0%</span>
           </p>
           <p className={step >= 3 ? "text-accent-bright" : "text-term-faint"}>
             {step >= 3 ? "SEQUENCE FLATTENED — LIMIT HIT" : "ARMED"}

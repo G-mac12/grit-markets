@@ -128,20 +128,20 @@ export const GUIDES: Guide[] = [
         text: "Write down, as an amount of money, the most you are prepared to lose on the account running Grit Markets. Not per trade and not per month: in total, in the worst case. Every subsequent setting exists to enforce this number, and if you skip this step the settings have nothing to enforce. If the honest answer is that you cannot afford to lose the balance on this account, fund a smaller account before proceeding.",
       },
       {
-        name: "Set the equity stop",
-        text: "The equity stop closes every open position and halts trading when floating losses reach a percentage of account equity that you define. It is the account's final safety net, so set it first and never disable it. Choose the percentage from the maximum loss you wrote down in the previous step. Be aware of its limits: in a fast or gapping market the actual closing prices can be worse than the trigger level, so the realised loss can exceed the configured one.",
+        name: "Turn the equity stop ON and set its percentage",
+        text: "The equity stop (inputs: UseEquityStop and EquityStopPercent) closes the whole basket and halts trading for the day when floating losses reach a percentage of your balance. It is switchable, and the current build ships with it OFF to mirror the legacy EA it derives from - that legacy configuration once left a basket stuck open for a month. Set UseEquityStop to true before any live trading, and choose EquityStopPercent from the maximum loss you wrote down in the previous step. Be aware of its limits: in a fast or gapping market the closing prices can be worse than the trigger level, so the realised loss can exceed the configured one.",
       },
       {
-        name: "Cap the maximum recovery levels",
-        text: "The level cap limits how many times the EA may add to a losing basket. Because position size grows geometrically with each level, this single input largely determines the size of the worst-case basket. Fewer levels mean smaller and more frequent realised losses; more levels mean smoother periods punctuated by deeper drawdowns. Start at the conservative end of the documented range and resist raising it after a losing basket, which is precisely when raising it is most tempting and most dangerous.",
+        name: "Cap the maximum legs per basket",
+        text: "MaxLegsPerBasket limits how many times the EA may add to a losing basket. Each leg is 1.21 times the size of the last, so this single input largely determines the worst-case basket. The current build ships at 196 - effectively uncapped, matching the legacy EA - and we recommend a real cap in the region of 21 instead. Fewer legs mean smaller and more frequent realised losses; more legs mean smoother periods punctuated by deeper drawdowns. Resist raising it after a losing basket, which is precisely when raising it is most tempting and most dangerous.",
       },
       {
         name: "Size the base lot from the worst case backwards",
-        text: "The base lot is the volume of the first trade in each cycle, and everything in the worst-case basket scales linearly with it. Do not choose it by what looks profitable; derive it by working backwards from your equity stop, multiplier and level cap so that a fully extended basket at maximum drawdown stays inside the loss you decided in step one. The simulator on gritmarkets.com does this arithmetic for you: enter your account size, multiplier and level cap, and adjust the base lot until the worst-case figure is one you have already accepted.",
+        text: "BaseLot is the volume of the first leg, and everything in the worst-case basket scales linearly with it. The engine was sized against a 2,500 baseline: roughly BaseLot 0.01 per 2,500 of balance (so about 0.02 on a 5,000 account). Do not choose it by what looks profitable; derive it by working backwards from your equity stop, multiplier and legs cap so a fully extended basket stays inside the loss you decided in step one. The simulator on gritmarkets.com does this arithmetic for you: enter your account size, multiplier and legs cap, and adjust the base lot until the worst-case figure is one you have already accepted.",
       },
       {
-        name: "Configure the news and session filters",
-        text: "The news filter keeps the EA from opening new cycles around high-impact scheduled releases such as central bank decisions and major economic data, and the session filter restricts trading to the hours you specify. Both reduce the chance of a basket being opened directly into a violent move. Enable the news filter with a sensible buffer either side of events, and consider excluding illiquid periods such as the daily rollover. Remember their limit: filters cover scheduled events, and the most damaging moves are often unscheduled.",
+        name: "Configure the news filter and calendar protections",
+        text: "The news filter (UseNewsFilter) pauses new baskets and new legs around high-impact USD, EUR and CAD releases, with longer pauses after the biggest events: 90 minutes after rate decisions and NFP, 60 after CPI and GDP, 45 after other high-impact news, plus 10 minutes before any of them. Alongside it sit the calendar protections: a Friday cutoff hour that blocks new baskets before the weekend close, a Monday warm-up that skips the choppy weekly reopen, a rollover blackout around broker midnight, and a holiday block over Christmas and New Year. Leave them on. Remember their limit: filters cover scheduled events, and the most damaging moves are often unscheduled.",
       },
       {
         name: "Verify the configuration on a demo account",
@@ -153,7 +153,7 @@ export const GUIDES: Guide[] = [
       },
     ],
     notes: [
-      "[OWNER INPUT: confirm final EA feature list. The controls described here, equity stop, maximum recovery levels, base lot sizing, multiplier, news filter and session filter, must match the shipped input parameters exactly, including their input names.]",
+      "Input names in this guide match the shipped EA exactly: BaseLot, LotMultiplier, MaxLegsPerBasket, TakeProfit_Points, GridStep_Points, UseEquityStop, EquityStopPercent, MaxStopsPerDay, UseNewsFilter, Friday_Cutoff_Hour, UseMondayWarmup and UseRolloverBlackout. The full plain-English settings guide ships with the EA download.",
       "Tighter settings reduce the size of individual drawdowns but tend to realise small losses more often; looser settings smooth the equity curve while deepening the eventual drawdowns. There is no configuration of Grit Markets that removes the risk of losing the balance on the account it trades.",
       "Where you use backtests to compare configurations, remember they are simulated results. Backtests do not predict live performance.",
       "Nothing in this guide is investment advice. It describes how the software's controls operate so you can make your own decisions.",

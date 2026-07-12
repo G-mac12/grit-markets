@@ -59,9 +59,10 @@ export default function HomePage() {
           The strategy compounds. The limits are hard.
         </h2>
         <p className="mt-5 max-w-xl leading-relaxed text-fg-muted">
-          Every control ships enabled by default. They bound the damage a
-          recovery sequence can do — no setting removes Martingale risk
-          entirely, and we will not tell you otherwise.
+          Every control is real, documented, and yours to configure — including
+          switching the equity stop off, which we plainly tell you not to do
+          on a live account. They bound the damage a basket can do; no setting
+          removes Martingale risk entirely, and we will not tell you otherwise.
         </p>
         <div className="mt-12">
           <SpecCards />

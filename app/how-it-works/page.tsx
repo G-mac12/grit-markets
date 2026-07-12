@@ -12,17 +12,21 @@ export const metadata: Metadata = {
   alternates: { canonical: "/how-it-works" },
 };
 
-const LEVELS = Array.from({ length: 7 }, (_, i) => {
-  const lot = 0.01 * 2 ** i;
-  const cumulative = 0.01 * (2 ** (i + 1) - 1);
-  return { level: i + 1, lot, cumulative };
+// Real engine geometry: ×1.21 per leg from a 0.01 base lot. Shown at the
+// depths that matter — the historic strategy reached ~24 legs in practice.
+const LEG_SAMPLE = [1, 5, 9, 13, 17, 21, 24];
+const LEVELS = LEG_SAMPLE.map((leg) => {
+  const lot = 0.01 * Math.pow(1.21, leg - 1);
+  let cumulative = 0;
+  for (let i = 0; i < leg; i++) cumulative += 0.01 * Math.pow(1.21, i);
+  return { level: leg, lot, cumulative };
 });
 
 const LIFECYCLE = [
   {
     n: "01",
     title: "Scan",
-    body: "Within your configured session windows, the engine scans its market for a qualifying entry. Outside a window, or around filtered news events, it does nothing.",
+    body: "The engine watches EURUSD around the clock, five days a week, entering against the recent move only when its volatility, spread and news gates all agree the tape is calm enough for mean reversion.",
   },
   {
     n: "02",
@@ -32,12 +36,12 @@ const LIFECYCLE = [
   {
     n: "03",
     title: "Recover with compounding size",
-    body: "If price moves against the position by the step distance, the engine adds a larger position — multiplied at each level — so a reversal to a nearer price closes the whole set profitably. This is the Martingale core, and it is where the risk lives.",
+    body: "If price moves 2.1 pips against the basket, the engine adds a leg \u00d71.21 the size of the last, so a reversal to a nearer price closes the whole basket 3.4 pips in profit. This is the Martingale core, and it is where the risk lives.",
   },
   {
     n: "04",
     title: "Hit a limit, take the loss",
-    body: "If the sequence reaches your max-level cap or floating losses reach your equity stop, the engine flattens everything and realises the loss. A bounded loss taken on purpose is the feature; unbounded averaging is the failure mode we refuse.",
+    body: "If floating losses reach your equity stop, the engine flattens the basket, realises the loss, and refuses new baskets for the rest of the day. A bounded loss taken on purpose is the feature; unbounded averaging is the failure mode this control exists to prevent — which is why we tell you never to run live with it switched off.",
   },
 ];
 
@@ -72,9 +76,11 @@ export default function HowItWorksPage() {
           Martingale, explained the way we&apos;d want it explained to us.
         </h1>
         <p className="mt-8 max-w-2xl text-lg leading-relaxed text-fg-muted">
-          Grit Markets opens a small position, and if the market moves against
-          it, adds progressively larger positions so that a partial reversal
-          closes the whole set in profit. That produces frequent small wins and
+          Grit Markets trades EURUSD around the clock, five days a week. It
+          opens a small position against the recent move (mean reversion), and
+          if price keeps going the wrong way it adds a larger position every
+          2.1 pips — each leg ×1.21 the last — so that a partial reversal
+          closes the whole basket 3.4 pips in profit. Frequent small wins,
           occasional deep drawdowns. Hard limits decide how deep. That is the
           entire strategy — no black box.
         </p>
@@ -86,19 +92,21 @@ export default function HowItWorksPage() {
           <Reveal>
             <p className="label-micro mb-4 text-accent">The sizing math</p>
             <h2 className="font-display text-display-md font-medium">
-              Each level doubles. So does the damage a bust does.
+              Every leg is ×1.21 the last. Depth is what does the damage.
             </h2>
             <p className="mt-5 max-w-md leading-relaxed text-fg-muted">
-              With a 0.01 base lot and a ×2 multiplier, level seven trades 64
-              times the base size, and the whole sequence has committed 127
-              times the base exposure. This table is the reason the max-level
-              cap exists — and the reason we publish it.
+              A ×1.21 ladder grows gently at first — which is exactly why it
+              can go deep. By leg 24 (the depth this strategy class has
+              actually reached in practice) a single leg trades over 60 times
+              the base size and the basket has committed more than 300 times
+              the base exposure. This table is why the max-legs cap and the
+              equity stop exist — and why we publish it.
             </p>
           </Reveal>
           <Reveal delay={0.1}>
             <table className="w-full font-mono text-sm">
               <caption className="sr-only">
-                Position size per Martingale level at base lot 0.01 and multiplier 2
+                Position size per Martingale leg at base lot 0.01 and multiplier 1.21
               </caption>
               <thead>
                 <tr className="border-b border-line text-left text-fg-faint">
@@ -116,7 +124,7 @@ export default function HowItWorksPage() {
                     <td className="py-2 text-right text-fg">{l.lot.toFixed(2)}</td>
                     <td
                       className={`py-2 text-right ${
-                        l.level >= 6 ? "text-loss" : "text-fg-muted"
+                        l.level >= 17 ? "text-loss" : "text-fg-muted"
                       }`}
                     >
                       {l.cumulative.toFixed(2)}
@@ -126,7 +134,7 @@ export default function HowItWorksPage() {
               </tbody>
             </table>
             <p className="mt-3 font-mono text-micro uppercase tracking-[0.12em] text-fg-faint">
-              Illustration at multiplier ×2 — configurable in the EA
+              The engine&apos;s shipped ×1.21 geometry — multiplier and cap configurable
             </p>
           </Reveal>
         </div>
@@ -182,15 +190,17 @@ export default function HowItWorksPage() {
       <section className="mx-auto max-w-site px-5 py-24 md:px-10">
         <p className="label-micro mb-4">The controls</p>
         <h2 className="max-w-3xl font-display text-display-md font-medium">
-          Four hard limits stand between the ladder and your account.
+          Six controls stand between the ladder and your account.
         </h2>
         <div className="mt-12">
           <SpecCards />
         </div>
         <p className="mt-8 max-w-2xl text-sm leading-relaxed text-fg-faint">
           Risk controls bound losses; they do not eliminate them. Tighter caps
-          mean smaller worst cases and more frequent realised losing sequences.
-          No configuration of Grit Markets removes the risk of losing capital.
+          mean smaller worst cases and more frequent realised losing baskets —
+          and every control, including the equity stop, is yours to configure
+          or disable. No configuration of Grit Markets removes the risk of
+          losing capital.
         </p>
       </section>
     </>
