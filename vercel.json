@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/daily-rollup", "schedule": "5 0 * * *" },
     { "path": "/api/cron/ea-offline-check", "schedule": "30 6 * * *" },
-    { "path": "/api/cron/purge-deleted", "schedule": "30 3 * * *" }
+    { "path": "/api/cron/purge-deleted", "schedule": "30 3 * * *" },
+    { "path": "/api/cron/indexnow", "schedule": "15 7 * * 1" }
   ]
 }

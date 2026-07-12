@@ -46,6 +46,14 @@ export const metadata: Metadata = {
     description: SITE.description,
   },
   robots: { index: true, follow: true },
+  verification: {
+    // set GOOGLE_SITE_VERIFICATION / BING_SITE_VERIFICATION in Vercel to
+    // verify Search Console / Bing Webmaster via meta tag (DNS also works)
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+      : {},
+  },
 };
 
 export default function RootLayout({
