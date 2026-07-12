@@ -10,12 +10,15 @@ import { simulate, type SimParams, type SimResult } from "@/lib/martingale";
  * results are also reported as text for screen readers.
  */
 
+// Defaults mirror the real engine's shipped configuration (×1.21 ladder,
+// capped at a realistic 21 legs) with a win-per-step rate in the region the
+// strategy's own backtests exhibit.
 const DEFAULTS = {
   startBalance: 10_000,
   baseLot: 0.01,
-  multiplier: 2,
-  maxLevels: 6,
-  winRate: 0.6,
+  multiplier: 1.21,
+  maxLevels: 21,
+  winRate: 0.7,
 };
 
 const CYCLES = 250;
@@ -39,8 +42,8 @@ interface Control {
 const CONTROLS: Control[] = [
   { key: "startBalance", label: "Starting balance", min: 1000, max: 100000, step: 500, format: (v) => gbp.format(v) },
   { key: "baseLot", label: "Base lot", min: 0.01, max: 0.5, step: 0.01, format: (v) => v.toFixed(2) },
-  { key: "multiplier", label: "Multiplier", min: 1.2, max: 3, step: 0.1, format: (v) => `×${v.toFixed(1)}` },
-  { key: "maxLevels", label: "Max recovery levels", min: 2, max: 10, step: 1, format: (v) => String(v) },
+  { key: "multiplier", label: "Multiplier", min: 1.05, max: 3, step: 0.01, format: (v) => `×${v.toFixed(2)}` },
+  { key: "maxLevels", label: "Max legs per basket", min: 2, max: 40, step: 1, format: (v) => String(v) },
   { key: "winRate", label: "Win rate per trade", min: 0.4, max: 0.9, step: 0.01, format: (v) => `${Math.round(v * 100)}%` },
 ];
 
@@ -207,9 +210,11 @@ export function Simulator({
             </div>
           ))}
           <p className="border-t border-line pt-4 text-xs leading-relaxed text-fg-faint">
-            Model: fixed 20-pip target and stop, £10 pip value per 1.0 lot,
-            independent outcomes, {RUNS} Monte Carlo runs of {CYCLES} sequences.
-            Simulated results. Backtests and simulations do not predict live
+            Model: grid basket matching the engine's geometry (3.4-pip basket
+            take-profit, 2.1-pip grid step, $10 pip value per 1.0 lot), with
+            trending-market persistence so deep ladders show their real tail
+            risk. {RUNS} Monte Carlo runs of {CYCLES} baskets. Simulated
+            results — simulations and backtests do not predict live
             performance.
           </p>
         </form>

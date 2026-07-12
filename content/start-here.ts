@@ -470,7 +470,7 @@ export const START_GUIDES: StartGuide[] = [
       },
       {
         name: "Fill in the Inputs tab field by field",
-        text: "The Inputs tab lists the EA's settings. For Grit Markets the key ones are: the licence key, pasted exactly from your dashboard, which the EA checks against gritmarkets.com; the base lot, where a lot is the standard unit of trade size, so this sets how large the first position in any sequence is; the max recovery levels, which caps how many times the EA may enlarge its position after losses before it stops adding; and the equity stop, a safety line that closes everything if your account value falls to the level you set. On demo, keep the defaults and the smallest base lot. [OWNER INPUT: confirm final EA input list].",
+        text: "The Inputs tab lists the EA's settings. For Grit Markets the key ones are: the licence key, pasted exactly from your dashboard, which the EA checks against gritmarkets.com; BaseLot, where a lot is the standard unit of trade size, so this sets how large the first leg of any basket is; MaxLegsPerBasket, which caps how many times the EA may add a larger position after losses before it stops adding; and UseEquityStop with EquityStopPercent, the safety line that closes everything if floating losses reach the percentage you set - make sure UseEquityStop is set to true. On demo, keep the smallest base lot.",
         screenshot: {
           file: "ea-inputs-dialog-settings.webp",
           alt: "Expert Advisor Inputs tab showing licence key, base lot, max recovery levels and equity stop fields",

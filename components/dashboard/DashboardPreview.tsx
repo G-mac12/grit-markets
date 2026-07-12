@@ -189,12 +189,12 @@ export function DashboardPreview() {
             <div>
               <dt className="label-micro text-term-faint">Recovery level</dt>
               <dd className="mt-1 text-term-fg">
-                {maxLevel} <span className="text-term-faint">/ 6 max</span>
+                {maxLevel} <span className="text-term-faint">/ 21 max</span>
               </dd>
             </div>
             <div>
               <dt className="label-micro text-term-faint">Equity stop</dt>
-              <dd className="mt-1 text-accent-bright">ARMED −8.0%</dd>
+              <dd className="mt-1 text-accent-bright">ARMED −20.0%</dd>
             </div>
             <div>
               <dt className="label-micro text-term-faint">EA version</dt>

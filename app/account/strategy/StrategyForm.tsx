@@ -66,7 +66,7 @@ export function StrategyForm({
           numField
         )}
         <div className="flex items-end gap-6">
-          {(["session_filter", "news_filter"] as const).map((k) => (
+          {(["use_equity_stop", "news_filter"] as const).map((k) => (
             <label key={k} className="flex items-center gap-2 font-mono text-xs text-term-muted">
               <input
                 type="checkbox"
@@ -74,7 +74,7 @@ export function StrategyForm({
                 onChange={(e) => setP((v) => ({ ...v, [k]: e.target.checked }))}
                 className="accent-[#5E71FF]"
               />
-              {k === "session_filter" ? "Session filter" : "News filter"}
+              {k === "use_equity_stop" ? "Equity stop" : "News filter"}
             </label>
           ))}
         </div>
@@ -135,7 +135,7 @@ export function StrategyForm({
               startBalance: accountBalance ?? 10_000,
               baseLot: p.base_lot,
               multiplier: p.lot_multiplier,
-              maxLevels: p.max_levels,
+              maxLevels: Math.min(p.max_legs, 40),
             }}
           />
         </div>
