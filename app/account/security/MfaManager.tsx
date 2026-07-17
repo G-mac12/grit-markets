@@ -131,9 +131,14 @@ export function MfaManager() {
           <p className="label-micro mb-3 text-term-faint">
             Scan with your authenticator, then enter the 6-digit code
           </p>
-          <div
-            className="inline-block bg-white p-2 [&>svg]:h-40 [&>svg]:w-40"
-            dangerouslySetInnerHTML={{ __html: enroll.qr }}
+          {/* Supabase returns qr_code as a data:image/svg+xml URI — render
+              as an image, never inject as HTML (the prefix shows as text
+              and the mangled SVG can fail to scan) */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={enroll.qr}
+            alt="TOTP enrolment QR code"
+            className="h-44 w-44 bg-white p-2"
           />
           <p className="mt-2 break-all font-mono text-micro text-term-faint">
             manual key: {enroll.secret}
