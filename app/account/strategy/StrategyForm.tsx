@@ -1,95 +1,104 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Simulator } from "@/components/simulator/Simulator";
-import {
-  DEFAULT_PARAMS,
-  PARAM_BOUNDS,
-  riskDeltas,
-  type StrategyParams,
-} from "@/lib/strategy";
-import { submitStrategySettings, type StrategyActionResult } from "./actions";
+import type { AbstractProfile } from "@/lib/strategy";
+import { submitRiskProfile, type StrategyActionResult } from "./actions";
 
 /**
- * Edit form with live inline risk deltas and a what-if Monte Carlo preview
- * seeded with the account's real balance. Submission requires TOTP step-up,
- * enforced server-side.
+ * Risk-profile picker (constraint 6). Raw strategy parameters never reach
+ * the client: the cards below carry only server-computed abstractions, and
+ * submission sends a profile key which the server maps to raw params.
+ * Submission requires TOTP step-up, enforced server-side.
  */
 export function StrategyForm({
   accountLinkId,
-  current,
+  currentProfile,
   accountBalance,
+  profiles,
 }: {
   accountLinkId: string;
-  current: StrategyParams | null;
+  currentProfile: string | null;
   accountBalance: number | null;
+  profiles: AbstractProfile[];
 }) {
-  const base = current ?? DEFAULT_PARAMS;
-  const [p, setP] = useState<StrategyParams>(base);
+  const [selected, setSelected] = useState<string>(
+    currentProfile ?? "balanced"
+  );
   const [showWhatIf, setShowWhatIf] = useState(false);
   const [result, setResult] = useState<StrategyActionResult | null>(null);
   const [pending, start] = useTransition();
 
-  const deltas = useMemo(() => riskDeltas(base, p), [base, p]);
-  const numField = (key: keyof typeof PARAM_BOUNDS) => {
-    const b = PARAM_BOUNDS[key];
-    return (
-      <div key={key}>
-        <div className="flex items-baseline justify-between">
-          <label htmlFor={`sp-${key}`} className="label-micro text-term-faint">
-            {b.label}
-          </label>
-          <output className="font-mono text-sm text-accent-bright">
-            {p[key]}
-          </output>
-        </div>
-        <input
-          id={`sp-${key}`}
-          type="range"
-          min={b.min}
-          max={b.max}
-          step={b.step}
-          value={p[key]}
-          onChange={(e) =>
-            setP((v) => ({ ...v, [key]: Number(e.target.value) }))
-          }
-          className="w-full accent-[#5E71FF]"
-        />
-      </div>
-    );
-  };
+  const fmtExposure = (x: number) =>
+    Math.abs(x - 1) < 0.05 ? "baseline" : `≈${x.toFixed(1)}× Balanced`;
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-5 md:grid-cols-2">
-        {(Object.keys(PARAM_BOUNDS) as (keyof typeof PARAM_BOUNDS)[]).map(
-          numField
-        )}
-        <div className="flex items-end gap-6">
-          {(["use_equity_stop", "news_filter"] as const).map((k) => (
-            <label key={k} className="flex items-center gap-2 font-mono text-xs text-term-muted">
-              <input
-                type="checkbox"
-                checked={p[k]}
-                onChange={(e) => setP((v) => ({ ...v, [k]: e.target.checked }))}
-                className="accent-[#5E71FF]"
-              />
-              {k === "use_equity_stop" ? "Equity stop" : "News filter"}
-            </label>
-          ))}
+      <fieldset>
+        <legend className="sr-only">Risk profile</legend>
+        <div className="grid gap-4 md:grid-cols-3">
+          {profiles.map((p) => {
+            const active = selected === p.key;
+            return (
+              <label
+                key={p.key}
+                className={`block cursor-pointer border p-4 transition-colors ${
+                  active
+                    ? "border-accent-bright bg-term-bg"
+                    : "border-term-line hover:border-term-muted"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="risk-profile"
+                  value={p.key}
+                  checked={active}
+                  onChange={() => setSelected(p.key)}
+                  className="sr-only"
+                />
+                <p
+                  className={`font-mono text-xs font-bold uppercase tracking-[0.14em] ${
+                    active ? "text-accent-bright" : "text-term-fg"
+                  }`}
+                >
+                  {p.label}
+                  {currentProfile === p.key && (
+                    <span className="ml-2 text-gain-bright">· applied</span>
+                  )}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-term-muted">
+                  {p.description}
+                </p>
+                <dl className="mt-3 space-y-1 font-mono text-micro uppercase tracking-[0.08em] text-term-faint">
+                  <div className="flex justify-between">
+                    <dt>Equity stop</dt>
+                    <dd className="text-accent-bright">−{p.equityStopPct}%</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt>Worst-case exposure</dt>
+                    <dd>{fmtExposure(p.exposureVsBalanced)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt>Ladder</dt>
+                    <dd>
+                      {p.depth} · {p.spacing} spacing
+                    </dd>
+                  </div>
+                </dl>
+              </label>
+            );
+          })}
         </div>
-      </div>
+      </fieldset>
 
-      {deltas.length > 0 && (
+      {selected === "aggressive" && (
         <div className="border border-loss-bright/40 bg-term-bg p-4" role="status">
-          <p className="label-micro mb-2 text-loss-bright">What this change does to your risk</p>
-          <ul className="space-y-1.5">
-            {deltas.map((d, i) => (
-              <li key={i} className="font-mono text-xs leading-relaxed text-term-muted">
-                — {d}
-              </li>
-            ))}
-          </ul>
+          <p className="font-mono text-xs leading-relaxed text-term-muted">
+            — Aggressive tolerates a deeper account drawdown before the equity
+            stop flattens the sequence, and commits meaningfully more capital
+            in a worst-case ladder. Only choose this if you have read the risk
+            guide and sized your account for it.
+          </p>
         </div>
       )}
 
@@ -103,15 +112,19 @@ export function StrategyForm({
         </button>
         <button
           type="button"
-          disabled={pending}
+          disabled={pending || selected === currentProfile}
           onClick={() =>
             start(async () => {
-              setResult(await submitStrategySettings(accountLinkId, p));
+              setResult(await submitRiskProfile(accountLinkId, selected));
             })
           }
           className="btn-primary px-4 py-2 text-xs disabled:opacity-50"
         >
-          {pending ? "Submitting…" : "Submit to EA (requires 2FA)"}
+          {pending
+            ? "Submitting…"
+            : selected === currentProfile
+              ? "Already applied"
+              : "Submit to EA (requires 2FA)"}
         </button>
       </div>
 
@@ -127,17 +140,13 @@ export function StrategyForm({
       {showWhatIf && (
         <div>
           <p className="mb-3 text-xs leading-relaxed text-term-muted">
-            Seeded with your current balance and proposed sizing. Simulated
-            results — they do not predict live performance.
+            Seeded with your current balance and the engine&apos;s published
+            shipped configuration (the Balanced profile). Profile parameter
+            details stay server-side; the cards above show each profile&apos;s
+            risk character relative to this baseline. Simulated results — they
+            do not predict live performance.
           </p>
-          <Simulator
-            initial={{
-              startBalance: accountBalance ?? 10_000,
-              baseLot: p.base_lot,
-              multiplier: p.lot_multiplier,
-              maxLevels: Math.min(p.max_legs, 40),
-            }}
-          />
+          <Simulator initial={{ startBalance: accountBalance ?? 10_000 }} />
         </div>
       )}
     </div>

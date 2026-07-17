@@ -61,6 +61,31 @@ export function sendWelcomeWithLicense(
   );
 }
 
+export function sendManualLicenseWelcome(
+  to: string,
+  licenseKey: string,
+  expiresAt: string | null
+): Promise<void> {
+  const expiryLine = expiresAt
+    ? `<p>This trial license runs until <strong>${new Date(expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</strong>. Nothing is charged — there is no card on file.</p>`
+    : "";
+  return send(
+    to,
+    "Your Grit Markets trial license",
+    shell(`
+  <p>Welcome to the Grit Markets trial. Your license key:</p>
+  <p style="font-family:monospace;font-size:16px;background:#F4F1EA;border:1px solid #D9D3C6;padding:12px 16px">${licenseKey}</p>
+  ${expiryLine}
+  <p>Getting started:</p>
+  <ol>
+    <li>Sign in to your <a href="${siteUrl()}/account" style="color:#1D35E0">dashboard</a> with this email address (magic link — no password needed).</li>
+    <li>Download the EA from Licenses &amp; Downloads and follow the <a href="${siteUrl()}/start-here" style="color:#1D35E0">start-here guides</a>.</li>
+    <li>Add <strong>https://gritmarkets.com</strong> to MT5's allowed WebRequest URLs — the on-chart panel walks you through it.</li>
+    <li>We recommend running on a <strong>demo account</strong> for the first two weeks.</li>
+  </ol>`)
+  );
+}
+
 export function sendPaymentFailed(to: string): Promise<void> {
   return send(
     to,

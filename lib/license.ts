@@ -1,6 +1,7 @@
 import { randomBytes } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TIERS } from "@/content/pricing";
+import { advanceOnboarding } from "./onboarding";
 
 /**
  * License key generation + the validation logic behind
@@ -34,9 +35,12 @@ const RATE_LIMIT_PER_MINUTE = 30;
 
 interface LicenseRow {
   id: string;
+  user_id: string;
   status: "active" | "suspended" | "revoked";
   mt5_account_numbers: string[];
   max_accounts: number;
+  source: "manual" | "stripe";
+  expires_at: string | null;
   subscription:
     | {
         status: string;
@@ -59,7 +63,7 @@ export async function validateLicense(
   const { data } = await admin
     .from("licenses")
     .select(
-      "id, status, mt5_account_numbers, max_accounts, subscription:subscriptions(status, current_period_end, past_due_since)"
+      "id, user_id, status, mt5_account_numbers, max_accounts, source, expires_at, subscription:subscriptions(status, current_period_end, past_due_since)"
     )
     .eq("license_key", license_key)
     .maybeSingle<LicenseRow>();
@@ -94,38 +98,50 @@ export async function validateLicense(
   }
 
   const sub = data.subscription;
-  const expires = sub?.current_period_end ?? null;
+  // Manual (trial-cohort) licenses run on expires_at; Stripe licenses run on
+  // the linked subscription's billing period.
+  const expires =
+    data.source === "manual"
+      ? data.expires_at
+      : sub?.current_period_end ?? null;
 
   if (data.status !== "active") {
     await log("rejected", `license_${data.status}`);
     return { valid: false, reason: `license_${data.status}`, expires };
   }
 
-  const subActive =
-    sub &&
-    (sub.status === "active" ||
-      sub.status === "trialing" ||
-      (sub.status === "past_due" &&
-        sub.past_due_since &&
-        Date.now() - new Date(sub.past_due_since).getTime() <
-          PAST_DUE_GRACE_MS));
-
-  if (!subActive) {
-    // lazy suspension: past_due beyond the grace period suspends the license
-    // (webhook reactivation flips it back to active on recovery)
-    if (sub?.status === "past_due") {
-      await admin
-        .from("licenses")
-        .update({ status: "suspended" })
-        .eq("id", data.id)
-        .eq("status", "active");
+  if (data.source === "manual") {
+    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
+      await log("rejected", "license_expired");
+      return { valid: false, reason: "license_expired", expires };
     }
-    await log("rejected", `subscription_${sub?.status ?? "missing"}`);
-    return {
-      valid: false,
-      reason: `subscription_${sub?.status ?? "missing"}`,
-      expires,
-    };
+  } else {
+    const subActive =
+      sub &&
+      (sub.status === "active" ||
+        sub.status === "trialing" ||
+        (sub.status === "past_due" &&
+          sub.past_due_since &&
+          Date.now() - new Date(sub.past_due_since).getTime() <
+            PAST_DUE_GRACE_MS));
+
+    if (!subActive) {
+      // lazy suspension: past_due beyond the grace period suspends the license
+      // (webhook reactivation flips it back to active on recovery)
+      if (sub?.status === "past_due") {
+        await admin
+          .from("licenses")
+          .update({ status: "suspended" })
+          .eq("id", data.id)
+          .eq("status", "active");
+      }
+      await log("rejected", `subscription_${sub?.status ?? "missing"}`);
+      return {
+        valid: false,
+        reason: `subscription_${sub?.status ?? "missing"}`,
+        expires,
+      };
+    }
   }
 
   const bound = data.mt5_account_numbers;
@@ -135,6 +151,7 @@ export async function validateLicense(
       .from("licenses")
       .update({ last_validated_at: new Date().toISOString() })
       .eq("id", data.id);
+    await advanceOnboarding(admin, data.user_id, "validated");
     return { valid: true, reason: "ok", expires };
   }
 
@@ -148,6 +165,7 @@ export async function validateLicense(
       })
       .eq("id", data.id);
     await log("validated", "bound_new_account");
+    await advanceOnboarding(admin, data.user_id, "validated");
     return { valid: true, reason: "bound", expires };
   }
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getDashboardContext, fmtMoney, fmtSigned } from "@/lib/account-data";
 import { EquityCurve, MarginGauge } from "@/components/dashboard/charts";
 import { PositionsPanel } from "./PositionsPanel";
+import { OnboardingChecklist } from "./OnboardingChecklist";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +19,16 @@ export default async function OverviewPage({
         <h1 className="font-display text-display-md font-medium">Overview.</h1>
         <div className="panel mt-8 max-w-2xl p-6">
           <p className="leading-relaxed text-fg-muted">
-            No MT5 account is linked yet. Once your subscription is active and
-            the EA validates its license from your terminal, the account binds
-            automatically and telemetry starts flowing here.{" "}
+            No MT5 account is linked yet. Once your license is active and the
+            EA validates from your terminal, the account binds automatically
+            and telemetry starts flowing here.{" "}
             <Link href="/account/licenses" className="text-accent underline">
               Licenses &amp; Downloads
             </Link>{" "}
             has your key and the setup steps.
           </p>
         </div>
+        <OnboardingChecklist />
       </section>
     );
   }
@@ -97,6 +99,8 @@ export default async function OverviewPage({
           ))}
         </div>
       </div>
+
+      <OnboardingChecklist />
 
       <div className="term-panel scanlines mt-8 p-5 md:p-6">
         <EquityCurve points={(snaps ?? []).map((s) => ({ ts: s.ts, equity: Number(s.equity) }))} />

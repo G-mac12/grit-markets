@@ -41,7 +41,7 @@ const LIFECYCLE = [
   {
     n: "04",
     title: "Hit a limit, take the loss",
-    body: "If floating losses reach your equity stop, the engine flattens the basket, realises the loss, and refuses new baskets for the rest of the day. A bounded loss taken on purpose is the feature; unbounded averaging is the failure mode this control exists to prevent — which is why we tell you never to run live with it switched off.",
+    body: "If floating losses reach your profile's equity stop, the engine flattens the basket, realises the loss, and refuses new baskets for the rest of the day. A bounded loss taken on purpose is the feature; unbounded averaging is the failure mode this control exists to prevent — which is why every Grit Markets risk profile keeps the stop armed.",
   },
 ];
 
@@ -196,11 +196,11 @@ export default function HowItWorksPage() {
           <SpecCards />
         </div>
         <p className="mt-8 max-w-2xl text-sm leading-relaxed text-fg-faint">
-          Risk controls bound losses; they do not eliminate them. Tighter caps
-          mean smaller worst cases and more frequent realised losing baskets —
-          and every control, including the equity stop, is yours to configure
-          or disable. No configuration of Grit Markets removes the risk of
-          losing capital.
+          Risk controls bound losses; they do not eliminate them. Tighter
+          profiles mean smaller worst cases and more frequent realised losing
+          baskets; looser profiles do the reverse. You choose the profile —
+          the equity stop stays armed in all of them. No configuration of
+          Grit Markets removes the risk of losing capital.
         </p>
       </section>
     </>

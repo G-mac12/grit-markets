@@ -3,6 +3,7 @@ import { z } from "zod";
 import { adminConfigured } from "@/lib/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { decryptSecret, verifyHmac } from "@/lib/crypto";
+import { advanceOnboarding } from "@/lib/onboarding";
 
 /**
  * POST /api/telemetry — the data spine. The EA pushes every 5 minutes while
@@ -32,7 +33,7 @@ const tradeSchema = z.object({
   profit: z.number(),
   commission: z.number().default(0),
   swap: z.number().default(0),
-  sequence_level: z.number().int().min(1).max(20).nullish(),
+  sequence_level: z.number().int().min(1).max(210).nullish(),
 });
 
 const payloadSchema = z.object({
@@ -239,6 +240,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     mt5_account: parsed.mt5_account,
     ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown",
   });
+
+  // onboarding: first telemetry with a bound account moves the user to
+  // demo_bound/live_bound (forward-only; no-op once past that state)
+  await advanceOnboarding(
+    admin,
+    license.user_id,
+    parsed.is_demo ? "demo_bound" : "live_bound"
+  );
 
   return NextResponse.json({
     ok: true,

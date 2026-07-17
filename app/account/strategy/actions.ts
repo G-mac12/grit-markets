@@ -15,13 +15,39 @@ export interface StrategyActionResult {
 }
 
 /**
- * Submit a new settings version to the EA. Requires TOTP step-up (AAL2).
- * The version goes to `pending`; the EA applies it only when flat/base-level
- * and confirms via telemetry, which flips it to `applied`.
+ * Submit the raw params of a chosen risk profile as a new settings version.
+ * This is the ONLY client-triggerable path (constraint 6): the client sends
+ * a profile key; raw params are resolved server-side and never returned.
+ * Requires TOTP step-up (AAL2). The version goes to `pending`; the EA
+ * applies it only when flat/base-level and confirms via telemetry.
+ */
+export async function submitRiskProfile(
+  accountLinkId: string,
+  profileKey: string
+): Promise<StrategyActionResult> {
+  if (!adminConfigured()) return { ok: false, message: "Service not configured." };
+  if (!/^[a-z_]{3,30}$/.test(profileKey)) {
+    return { ok: false, message: "Bad request." };
+  }
+  const admin = createSupabaseAdminClient();
+  const { data: profile } = await admin
+    .from("risk_profiles")
+    .select("key, params")
+    .eq("key", profileKey)
+    .maybeSingle<{ key: string; params: unknown }>();
+  if (!profile) return { ok: false, message: "Unknown risk profile." };
+
+  return submitStrategySettings(accountLinkId, profile.params, profile.key);
+}
+
+/**
+ * Server-internal: queue a validated parameter set. Not exported to the
+ * client UI with raw params — reached via submitRiskProfile and revert.
  */
 export async function submitStrategySettings(
   accountLinkId: string,
-  rawParams: unknown
+  rawParams: unknown,
+  riskProfile?: string
 ): Promise<StrategyActionResult> {
   if (!adminConfigured()) return { ok: false, message: "Service not configured." };
   if (!z.string().uuid().safeParse(accountLinkId).success) {
@@ -78,11 +104,14 @@ export async function submitStrategySettings(
     params: parsed.data,
     status: "pending",
     previous_version: latest?.version ?? null,
+    risk_profile: riskProfile ?? null,
   });
+  // audit records the action + profile, never raw params (customer-readable
+  // via RLS — raw values must not be exposed client-side)
   await admin.from("settings_audit").insert({
     account_link_id: accountLinkId,
     actor_user_id: user.id,
-    change: { action: "submit", version, params: parsed.data },
+    change: { action: "submit", version, profile: riskProfile ?? "custom" },
     ip: headers().get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
   });
 
@@ -106,6 +135,7 @@ export async function revertStrategySettings(
   const stepUp = await checkStepUp(supabase);
   if (stepUp !== "ok") return { ok: false, message: STEP_UP_MESSAGES[stepUp] };
 
+  // ownership check via RLS (no params column in the customer grant)
   const { data: applied } = await supabase
     .from("strategy_settings")
     .select("version, previous_version")
@@ -117,13 +147,19 @@ export async function revertStrategySettings(
   if (!applied?.previous_version) {
     return { ok: false, message: "No previous version to revert to." };
   }
-  const { data: prev } = await supabase
+  // raw params are read with the service role, server-side only
+  const admin = createSupabaseAdminClient();
+  const { data: prev } = await admin
     .from("strategy_settings")
-    .select("params")
+    .select("params, risk_profile")
     .eq("account_link_id", accountLinkId)
     .eq("version", applied.previous_version)
-    .maybeSingle();
+    .maybeSingle<{ params: unknown; risk_profile: string | null }>();
   if (!prev) return { ok: false, message: "Previous version not found." };
 
-  return submitStrategySettings(accountLinkId, prev.params);
+  return submitStrategySettings(
+    accountLinkId,
+    prev.params,
+    prev.risk_profile ?? undefined
+  );
 }
