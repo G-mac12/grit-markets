@@ -87,6 +87,41 @@ export default async function SafetyBufferPage() {
         </div>
       </dl>
 
+      {/* where to move it */}
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="panel p-5">
+          <p className="label-micro mb-3">Acting on a recommendation</p>
+          <p className="text-sm leading-relaxed text-fg-muted">
+            Withdrawals happen at your broker, never here. IC Markets clients:
+            log in to the{" "}
+            <a
+              href="https://secure.icmarkets.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline"
+            >
+              Secure Client Area
+            </a>{" "}
+            → <span className="font-mono text-xs">Funds → Transfer between accounts / Withdrawal</span>,
+            move the amount, then come back and press &ldquo;I withdrew
+            this&rdquo; with the actual figure.
+          </p>
+        </div>
+        <div className="panel p-5">
+          <p className="label-micro mb-3">The reserve-account pattern</p>
+          <p className="text-sm leading-relaxed text-fg-muted">
+            Many subscribers open a <strong className="text-fg">second IC
+            Markets account</strong> as the reserve: internal transfers
+            between your own accounts are free and near-instant, so skimmed
+            profit leaves the EA&apos;s reach without leaving the broker.
+            The EA never touches the reserve account. We have no affiliate
+            relationship with IC Markets — this is a workflow suggestion,
+            not advice, and any broker with internal transfers works the
+            same way.
+          </p>
+        </div>
+      </div>
+
       {/* recommendation feed */}
       <div className="term-panel mt-8 p-5 md:p-6">
         <p className="label-micro mb-4 text-term-faint">Recommendation feed</p>
