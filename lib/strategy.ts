@@ -79,6 +79,67 @@ export function worstCaseExposureLots(p: {
 }
 
 /**
+ * Risk profiles (constraint 6): raw parameters live server-side only.
+ * Customers choose a profile; these abstractions are all the client ever
+ * sees. Descriptors are computed server-side from the raw params relative
+ * to the Balanced (published, shipped) configuration.
+ */
+export interface RiskProfileRow {
+  key: string;
+  label: string;
+  description: string;
+  params: StrategyParams;
+  sort: number;
+}
+
+export interface AbstractProfile {
+  key: string;
+  label: string;
+  description: string;
+  /** Equity stop is a safety disclosure, not strategy IP — always shown. */
+  equityStopPct: number;
+  /** Worst-case committed exposure relative to Balanced (1 = same). */
+  exposureVsBalanced: number;
+  depth: "shallower" | "default" | "deeper";
+  spacing: "wider" | "default" | "tighter";
+}
+
+export function abstractProfiles(rows: RiskProfileRow[]): AbstractProfile[] {
+  const balanced = rows.find((r) => r.key === "balanced") ?? rows[0];
+  const balExp = worstCaseExposureLots({
+    ...balanced.params,
+    max_legs: Math.min(balanced.params.max_legs, 30),
+  });
+  return [...rows]
+    .sort((a, b) => a.sort - b.sort)
+    .map((r) => {
+      const exp = worstCaseExposureLots({
+        ...r.params,
+        max_legs: Math.min(r.params.max_legs, 30),
+      });
+      return {
+        key: r.key,
+        label: r.label,
+        description: r.description,
+        equityStopPct: r.params.equity_stop_pct,
+        exposureVsBalanced: balExp > 0 ? exp / balExp : 1,
+        depth:
+          r.params.max_legs === balanced.params.max_legs
+            ? "default"
+            : r.params.max_legs < balanced.params.max_legs
+              ? "shallower"
+              : "deeper",
+        spacing:
+          r.params.grid_step_points === balanced.params.grid_step_points
+            ? "default"
+            : r.params.grid_step_points > balanced.params.grid_step_points
+              ? "wider"
+              : "tighter",
+      };
+    });
+}
+
+/**
  * Honest risk deltas between two parameter sets — rendered inline in the
  * settings form before a change is submitted.
  */

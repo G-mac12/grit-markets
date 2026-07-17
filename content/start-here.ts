@@ -469,15 +469,15 @@ export const START_GUIDES: StartGuide[] = [
         },
       },
       {
-        name: "Fill in the Inputs tab field by field",
-        text: "The Inputs tab lists the EA's settings. For Grit Markets the key ones are: the licence key, pasted exactly from your dashboard, which the EA checks against gritmarkets.com; BaseLot, where a lot is the standard unit of trade size, so this sets how large the first leg of any basket is; MaxLegsPerBasket, which caps how many times the EA may add a larger position after losses before it stops adding; and UseEquityStop with EquityStopPercent, the safety line that closes everything if floating losses reach the percentage you set - make sure UseEquityStop is set to true. On demo, keep the smallest base lot.",
+        name: "Fill in the Inputs tab — there are only three",
+        text: "The Inputs tab lists the EA's settings, and Grit Markets keeps this deliberately short: LicenseKey, pasted exactly from your dashboard, which the EA checks against gritmarkets.com; EnableTelemetry, which feeds your dashboard and should stay true; and MagicNumber, an identifier that separates this EA's trades from anything else on the account — the default is fine unless support says otherwise. Everything about risk and sizing is configured from your dashboard as a risk profile, delivered to the EA automatically, with the equity stop armed in every profile. There is nothing risk-related to type into MT5, and nothing to get wrong here.",
         screenshot: {
           file: "ea-inputs-dialog-settings.webp",
-          alt: "Expert Advisor Inputs tab showing licence key, base lot, max recovery levels and equity stop fields",
+          alt: "Expert Advisor Inputs tab showing the licence key, telemetry and magic number fields",
           annotations: [
             "1. Licence key field",
-            "2. Base lot and max recovery levels",
-            "3. Equity stop value",
+            "2. EnableTelemetry set to true",
+            "3. Magic number (default)",
           ],
         },
       },

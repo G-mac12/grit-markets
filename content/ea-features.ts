@@ -15,26 +15,26 @@ export const SPEC_CARDS: SpecCard[] = [
   {
     id: "equity-stop",
     name: "Equity stop",
-    status: "CONFIGURABLE",
+    status: "ALWAYS ARMED",
     readout: [
       { label: "trigger", value: "floating loss % of balance" },
       { label: "action", value: "flatten basket + halt" },
-      { label: "scope", value: "account-wide" },
+      { label: "scope", value: "every risk profile" },
     ],
     description:
-      "The master safety net: if floating losses reach your configured percentage of balance, the engine closes the entire basket and stops for the day. It is switchable — and we say plainly that running with it off is how classic Martingale accounts die. Turn it on before trading real money.",
+      "The master safety net: if floating losses reach your profile's percentage of balance, the engine closes the entire basket and stops for the day. Running a Martingale without a stop is how classic Martingale accounts die — so every Grit Markets risk profile keeps it armed. The percentage varies by profile; the stop itself is not optional.",
   },
   {
     id: "max-legs",
     name: "Max-legs cap",
-    status: "CONFIGURABLE",
+    status: "PROFILE-SET",
     readout: [
-      { label: "range", value: "1 – 210 legs" },
+      { label: "ladder", value: "capped in every profile" },
       { label: "sizing", value: "×1.21 geometric per leg" },
-      { label: "uncapped", value: "possible — disclosed" },
+      { label: "uncapped", value: "not offered" },
     ],
     description:
-      "A hard ceiling on how deep one basket may stack. The ladder grows geometrically, so this cap decides your worst case. Set high it is effectively uncapped — the historic behaviour of this strategy class, and exactly the trade-off we put in your hands rather than hide.",
+      "A hard ceiling on how deep one basket may stack. The ladder grows geometrically, so this cap decides your worst case. The uncapped ladder is the historic behaviour of this strategy class — we say so plainly, and no Grit Markets profile ships it. Your profile choice moves the cap between shallower and deeper, never to unlimited.",
   },
   {
     id: "daily-stop-limit",

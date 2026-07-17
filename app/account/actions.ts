@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { adminConfigured, authConfigured } from "@/lib/env";
 import { checkStepUp } from "@/lib/aal";
+import { advanceOnboarding } from "@/lib/onboarding";
 
 const REBINDS_PER_30_DAYS = 2;
 
@@ -94,14 +95,20 @@ export async function getDownloadUrl(
   } = await supabase.auth.getUser();
   if (!user) return { error: "auth_required" };
 
-  // must hold a live subscription (RLS scopes to own rows)
-  const { data: sub } = await supabase
-    .from("subscriptions")
-    .select("status")
-    .in("status", ["active", "trialing", "past_due"])
+  // must hold an active license — manual (trial cohort) or Stripe-backed.
+  // Manual licenses are also checked against their expiry.
+  const { data: lic } = await supabase
+    .from("licenses")
+    .select("source, expires_at")
+    .eq("status", "active")
     .limit(1)
-    .maybeSingle();
-  if (!sub) return { error: "no_subscription" };
+    .maybeSingle<{ source: string; expires_at: string | null }>();
+  const licenseLive =
+    lic &&
+    (lic.source !== "manual" ||
+      !lic.expires_at ||
+      new Date(lic.expires_at).getTime() > Date.now());
+  if (!licenseLive) return { error: "no_subscription" };
 
   if (!/^[\w.-]+$/.test(version)) return { error: "bad_version" };
 
@@ -116,6 +123,7 @@ export async function getDownloadUrl(
   await admin
     .from("downloads")
     .insert({ user_id: user.id, ea_version: version });
+  await advanceOnboarding(admin, user.id, "downloaded");
 
   return { url: data.signedUrl };
 }

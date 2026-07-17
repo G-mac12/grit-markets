@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { getDashboardContext, fmtMoney } from "@/lib/account-data";
-import { strategyParamsSchema, type StrategyParams } from "@/lib/strategy";
+import {
+  abstractProfiles,
+  strategyParamsSchema,
+  type RiskProfileRow,
+} from "@/lib/strategy";
+import { adminConfigured } from "@/lib/env";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { StrategyForm } from "./StrategyForm";
 import { RevertButton } from "./RevertButton";
 
@@ -23,7 +29,9 @@ export default async function StrategyPage() {
     await Promise.all([
       supabase
         .from("strategy_settings")
-        .select("version, params, status, created_at, applied_at, previous_version")
+        .select(
+          "version, status, created_at, applied_at, previous_version, risk_profile"
+        )
         .eq("account_link_id", link.id)
         .order("version", { ascending: false })
         .limit(12),
@@ -48,10 +56,19 @@ export default async function StrategyPage() {
     pending &&
     Date.now() - new Date(pending.created_at).getTime() > 48 * 3600_000;
 
-  let currentParams: StrategyParams | null = null;
-  if (applied) {
-    const parsed = strategyParamsSchema.safeParse(applied.params);
-    if (parsed.success) currentParams = parsed.data;
+  // profiles: raw params are read server-side only and abstracted before
+  // anything is passed to the client (constraint 6)
+  let profiles: ReturnType<typeof abstractProfiles> = [];
+  if (adminConfigured()) {
+    const admin = createSupabaseAdminClient();
+    const { data: rows } = await admin
+      .from("risk_profiles")
+      .select("key, label, description, params, sort")
+      .returns<RiskProfileRow[]>();
+    const valid = (rows ?? []).filter(
+      (r) => strategyParamsSchema.safeParse(r.params).success
+    );
+    if (valid.length > 0) profiles = abstractProfiles(valid);
   }
 
   return (
@@ -98,12 +115,13 @@ export default async function StrategyPage() {
         </p>
         <StrategyForm
           accountLinkId={link.id}
-          current={currentParams}
+          currentProfile={applied?.risk_profile ?? null}
           accountBalance={latestSnap ? Number(latestSnap.balance) : null}
+          profiles={profiles}
         />
         <p className="mt-5 border-t border-term-line pt-4 font-mono text-micro uppercase tracking-[0.1em] text-term-faint">
-          [OWNER INPUT: confirm parameter bounds and remotely editable set] ·
-          2FA enrolment lives in{" "}
+          [OWNER INPUT: confirm the three profile presets before external
+          trials] · 2FA enrolment lives in{" "}
           <Link href="/account/security" className="text-accent-bright underline">
             Account &amp; Security
           </Link>
@@ -119,7 +137,7 @@ export default async function StrategyPage() {
               {versions.map((v) => (
                 <li key={v.version} className="flex justify-between gap-3 border-b border-term-line/40 pb-2 text-term-muted last:border-0">
                   <span>
-                    v{v.version} ·{" "}
+                    v{v.version} · {v.risk_profile ?? "custom"} ·{" "}
                     <span className={v.status === "applied" ? "text-gain-bright" : v.status === "pending" ? "text-accent-bright" : "text-term-faint"}>
                       {v.status}
                     </span>
