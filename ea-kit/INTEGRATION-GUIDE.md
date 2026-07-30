@@ -115,6 +115,26 @@ next flat state → next push echoes the new `settings_version` → dashboard
 marks `applied`. If the account never goes flat the change waits, and the
 dashboard says so honestly at 48h.
 
+### 3. `GET https://gritmarkets.com/api/schedule?license_key=GM-…`
+
+The no-trade schedule (the tiered calendar derived from the 16.5-year
+stop-out study — same `GAM_NoTrade_v2.csv` format the v4.00 build already
+parses: `DATE`/`WEEK`/`ISOWEEK` rows, broker-server time). The platform is
+the single source of truth: the owner publishes new versions in /admin and
+every licensed EA picks them up automatically. Customers never handle files.
+
+- Auth: an active licence key in the query string (read-only data).
+- Response: `200 text/csv` with headers `X-GM-Schedule-Version` and
+  `X-GM-Schedule-Sha256`. Pass `&have=<sha256>` to get `304` when your
+  cached copy is already current.
+- Fetch on init and once per day. Hold the schedule **in memory** (not the
+  Files sandbox in the customer build). On any failure keep the last-good
+  copy; if the EA has never fetched successfully, behave per your
+  fail-closed setting exactly as with the CSV file today.
+- Wire-in is mechanical: the v4.00 parser stays as is — replace "read
+  MQL5\Files\GAM_NoTrade_v2.csv" with "read the response body", same
+  line format.
+
 ## HMAC test vector
 
 Before shipping, verify `GM_HmacSha256Hex`:

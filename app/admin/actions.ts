@@ -137,6 +137,72 @@ export async function issueLicense(
   };
 }
 
+/**
+ * Publish a new no-trade schedule version. The CSV becomes the active
+ * schedule served by /api/schedule to every licensed EA — customers never
+ * touch files. Light shape validation; the EA also validates on parse.
+ */
+export async function publishSchedule(
+  formData: FormData
+): Promise<AdminActionResult> {
+  const g = await gate();
+  if (g.denied) return g.denied;
+
+  const csv = String(formData.get("csv") ?? "").replace(/\r\n/g, "\n").trim();
+  const notes = String(formData.get("notes") ?? "").slice(0, 500) || null;
+  if (csv.length < 50 || csv.length > 200_000) {
+    return { ok: false, message: "CSV looks empty or too large." };
+  }
+  const dataLines = csv
+    .split("\n")
+    .filter((l) => l.trim() && !l.startsWith("#"));
+  const wellFormed = dataLines.every((l) =>
+    /^(DATE|WEEK|ISOWEEK),/.test(l.trim())
+  );
+  const dateRows = dataLines.filter((l) => l.startsWith("DATE,")).length;
+  if (!wellFormed || dateRows === 0) {
+    return {
+      ok: false,
+      message:
+        "Rejected: every non-comment line must start with DATE,/WEEK,/ISOWEEK, and at least one DATE row is required.",
+    };
+  }
+
+  const { createHash } = await import("crypto");
+  const sha256 = createHash("sha256").update(csv).digest("hex");
+
+  const admin = createSupabaseAdminClient();
+  const { data: latest } = await admin
+    .from("schedule_versions")
+    .select("version, sha256")
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ version: number; sha256: string }>();
+  if (latest?.sha256 === sha256) {
+    return { ok: false, message: "Identical to the current version — nothing published." };
+  }
+
+  await admin
+    .from("schedule_versions")
+    .update({ active: false })
+    .eq("active", true);
+  const version = (latest?.version ?? 0) + 1;
+  const { error } = await admin.from("schedule_versions").insert({
+    version,
+    csv,
+    sha256,
+    notes,
+    active: true,
+  });
+  if (error) return { ok: false, message: `Publish failed: ${error.message}` };
+
+  revalidatePath("/admin");
+  return {
+    ok: true,
+    message: `Schedule v${version} published (${dateRows} date rows). Licensed EAs pick it up on their next daily check.`,
+  };
+}
+
 export async function extendLicense(
   licenseId: string,
   months: number

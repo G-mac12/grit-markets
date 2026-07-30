@@ -1,6 +1,6 @@
 import { adminConfigured } from "@/lib/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { IssueForm, RowActions } from "./AdminPanels";
+import { IssueForm, RowActions, ScheduleForm } from "./AdminPanels";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export default async function AdminPage() {
     return <p className="text-fg-muted">Supabase admin is not configured.</p>;
   }
   const admin = createSupabaseAdminClient();
-  const [{ data: licenses }, { data: onboarding }] = await Promise.all([
+  const [{ data: licenses }, { data: onboarding }, { data: schedule }] = await Promise.all([
     admin
       .from("licenses")
       .select(
@@ -36,6 +36,12 @@ export default async function AdminPage() {
       .from("onboarding_state")
       .select("user_id, state")
       .returns<{ user_id: string; state: string }[]>(),
+    admin
+      .from("schedule_versions")
+      .select("version, csv")
+      .eq("active", true)
+      .limit(1)
+      .maybeSingle<{ version: number; csv: string }>(),
   ]);
   const stateByUser = new Map(
     (onboarding ?? []).map((o) => [o.user_id, o.state])
@@ -43,9 +49,18 @@ export default async function AdminPage() {
 
   const mask = (k: string) => `${k.slice(0, 8)}…${k.slice(-5)}`;
 
+  const scheduleRows = schedule
+    ? schedule.csv.split("\n").filter((l) => l.startsWith("DATE,")).length
+    : null;
+
   return (
     <div className="space-y-10">
       <IssueForm />
+
+      <ScheduleForm
+        currentVersion={schedule?.version ?? null}
+        currentRows={scheduleRows}
+      />
 
       <div>
         <p className="label-micro mb-4">
