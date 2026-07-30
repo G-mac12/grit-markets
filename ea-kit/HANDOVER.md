@@ -35,8 +35,23 @@ live — you are integrating against working endpoints, not a spec.
    WebRequest whitelist, licence, telemetry) so customers self-diagnose
    instead of emailing support. Reference: `GMPanel.mqh`.
 
+5. **Server-delivered no-trade schedule** — the v4.00 build already parses
+   `GAM_NoTrade_v2.csv` from the Files folder. In the customer build the
+   same calendar arrives from `GET /api/schedule` (identical line format),
+   is held in memory, and refreshes daily — so Grant can update the
+   calendar for every customer at once from the admin panel, and customers
+   never touch files. Contract in `INTEGRATION-GUIDE.md` §3.
+
 Plus a **Windows installer** (spec: `INSTALLER-SPEC.md`) — can follow as a
 second phase after the EA itself works.
+
+> **Customer build vs the v4.00 house build — deliberate differences.**
+> The shipping `GritMarkets.ex5` is NOT byte-for-byte v4.00: it must run
+> with `UseEquityStop=true` (20%) and a capped ladder per the server
+> profiles, with schedule layers ON — the website promises customers an
+> always-armed stop and a capped basket, and the compiled build must match.
+> The uncapped/stop-off configuration stays a private, own-risk choice on
+> Grant's own accounts and is never shipped.
 
 ## Where everything is
 
@@ -83,6 +98,9 @@ holds it and you have your own copy.
   change, makes the EA sellable.
 - **Week 2:** telemetry + settings channel + `sequence_level` tagging on
   closed trades. Lights up the whole dashboard.
+- **Week 3:** schedule endpoint wiring (swap the CSV file read for the
+  HTTP fetch — parser unchanged) + customer-build risk configuration
+  (stop ON, capped ladder, schedule layers ON).
 - **Then:** installer, once the .ex5 is proven.
 
 ## Ground rules (from the platform's compliance constraints)

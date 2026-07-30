@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import {
   extendLicense,
   issueLicense,
+  publishSchedule,
   resendWelcome,
   revokeLicense,
   type AdminActionResult,
@@ -103,6 +104,65 @@ export function IssueForm() {
         with the key. Existing users keep their login; the license simply
         appears in their dashboard.
       </p>
+    </div>
+  );
+}
+
+export function ScheduleForm({
+  currentVersion,
+  currentRows,
+}: {
+  currentVersion: number | null;
+  currentRows: number | null;
+}) {
+  const [result, setResult] = useState<AdminActionResult | null>(null);
+  const [pending, start] = useTransition();
+
+  return (
+    <div className="panel p-5 md:p-6">
+      <p className="label-micro mb-2">No-trade schedule</p>
+      <p className="mb-4 text-xs leading-relaxed text-fg-faint">
+        {currentVersion
+          ? `Active: v${currentVersion}${currentRows ? ` · ${currentRows} date rows` : ""}. `
+          : "No schedule published yet. "}
+        Paste the calendar CSV (GAM_NoTrade format: DATE/WEEK/ISOWEEK rows)
+        and publish — every licensed EA fetches the new version automatically
+        on its next daily check. Customers never handle files.
+      </p>
+      <form
+        action={(fd) => start(async () => setResult(await publishSchedule(fd)))}
+        className="space-y-3"
+      >
+        <textarea
+          name="csv"
+          required
+          rows={7}
+          placeholder={"DATE,01-02,00:00,24:00,RED LOCKOUT\nWEEK,FRI,12:00,24:00,Structural - weekend gap\nISOWEEK,W24,00:00,00:00,RED week overlay"}
+          className="w-full border border-line bg-white px-3 py-2 font-mono text-xs"
+        />
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="block grow">
+            <span className="label-micro">Notes (what changed)</span>
+            <input
+              name="notes"
+              type="text"
+              maxLength={500}
+              className="mt-1 block w-full border border-line bg-white px-3 py-2 font-mono text-sm"
+              placeholder="e.g. 2027 refresh from the 16.5-year study"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={pending}
+            className="btn-primary px-5 py-2.5 text-xs disabled:opacity-50"
+          >
+            {pending ? "Publishing…" : "Publish schedule"}
+          </button>
+        </div>
+      </form>
+      <div className="mt-4">
+        <ResultBanner result={result} />
+      </div>
     </div>
   );
 }
