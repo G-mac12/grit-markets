@@ -50,15 +50,15 @@ export const SPEC_CARDS: SpecCard[] = [
   },
   {
     id: "news-filter",
-    name: "News filter",
-    status: "TIERED",
+    name: "Event filter",
+    status: "KEYWORD-TIERED",
     readout: [
-      { label: "watches", value: "USD · EUR · CAD" },
-      { label: "pauses", value: "10m before events" },
-      { label: "after", value: "45–90m by impact tier" },
+      { label: "watches", value: "USD · EUR calendar" },
+      { label: "tier 1", value: "24h before → 2h after" },
+      { label: "tiers 2–3", value: "60/30m before → 90/60m after" },
     ],
     description:
-      "Rate decisions and NFP get the longest post-event pause, CPI and GDP a shorter one, other high-impact releases the base tier. Blocks both new baskets and adding legs to an open one. An optional stricter mode blocks the whole day ahead of major events.",
+      "Events are classified by what they are, not by the calendar's star rating — because those ratings misrank the events that matter (a Fed statement can carry a lower rating than an oil-inventory print). Rate decisions, NFP and central-bank pressers get the widest window; CPI and GDP the next; other high-impact releases the base tier, with the calendar's own rating as the fallback so nothing slips through unclassified. Blocks new baskets and new legs, never the management of open positions.",
   },
   {
     id: "volatility-gates",
@@ -83,5 +83,17 @@ export const SPEC_CARDS: SpecCard[] = [
     ],
     description:
       "No new baskets into the weekend close (gap risk), none in the choppy first minutes of the weekly reopen, and none during the broker's midnight rollover spread-spike. Holiday markets (24 Dec – 2 Jan) are blocked outright.",
+  },
+  {
+    id: "no-trade-calendar",
+    name: "No-trade calendar",
+    status: "MAINTAINED",
+    readout: [
+      { label: "built from", value: "16.5-yr stop-out study" },
+      { label: "encodes", value: "131 dates · 12 windows · 22 wks" },
+      { label: "updates", value: "delivered automatically" },
+    ],
+    description:
+      "We studied 16.5 years of this strategy class's failures — 1,372 stop-out events across 3,037 test windows — and encoded the historically dangerous calendar dates, weekday windows and weeks of the year as tiers the engine enforces. The calendar is maintained centrally and every licensed EA receives updates automatically. It removes historically hostile periods; it does not remove risk, and no study of the past binds the future.",
   },
 ];

@@ -33,9 +33,11 @@ export default function PricingPage() {
           paying for software and updates — not for a trading outcome, which
           nobody can sell you.
         </p>
+        <p className="mt-4 inline-block border border-accent/50 px-3 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-accent">
+          First month free on every plan — demo or live
+        </p>
 
-        {/* [OWNER INPUT: confirm tiers & prices — placeholders below] */}
-        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:max-w-4xl">
+        <div className="mt-14 grid gap-5 md:grid-cols-2 lg:max-w-4xl">
           {TIERS.map((tier) => (
             <article
               key={tier.id}
@@ -54,6 +56,10 @@ export default function PricingPage() {
               <p className="mt-5 font-mono text-4xl text-fg">
                 £{tier.pricePerMonthGBP}
                 <span className="text-base text-fg-faint"> /month</span>
+              </p>
+              <p className="mt-1 font-mono text-micro uppercase tracking-[0.12em] text-fg-faint">
+                £0 first month · then £{tier.pricePerMonthGBP}/month · cancel
+                anytime
               </p>
               <ul className="mt-6 flex-1 space-y-3 border-t border-line pt-6">
                 {tier.highlights.map((h) => (
