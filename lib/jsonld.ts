@@ -37,7 +37,7 @@ export function softwareApplicationJsonLd(): JsonLd {
       highPrice: "49.00",
       offerCount: 2,
       description:
-        "Standard £29/month or Premium £49/month — first month free on both, demo or live.",
+        "Standard £29/month or Premium £49/month — first month free on both, no card required, demo or live.",
       url: absoluteUrl("/pricing"),
     },
     publisher: { "@id": `${SITE.url}/#organization` },

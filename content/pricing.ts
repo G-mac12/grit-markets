@@ -49,7 +49,8 @@ export const TIERS: Tier[] = [
 ];
 
 export const PRICING_NOTES = [
-  "First month free on every plan, demo or live account — billing starts from month two, and you can cancel before it ever does.",
+  "First month free on every plan — no card required to start, demo or live account. Around two weeks in we'll invite you to set up billing; if you don't, the license simply expires at the end of the month and nothing is ever charged.",
+  "One free month per person and per MT5 account — the license binds to your account number.",
   "Monthly rolling subscription — cancel any time, effective at the end of the current billing period.",
   "The license key is bound to your MT5 account number(s); rebinding is self-service from the dashboard.",
   "Every safety feature is in every tier. We do not sell risk management as an upgrade.",
