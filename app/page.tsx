@@ -79,9 +79,10 @@ export default function HomePage() {
                 One engine. Monthly license. Cancel any time.
               </h2>
               <p className="mt-5 max-w-xl leading-relaxed text-fg-muted">
-                From £{Math.min(...TIERS.map((t) => t.pricePerMonthGBP))}/month.
-                No lifetime-deal lock-in, no performance fees — you are
-                licensing software, not buying a promise.
+                First month free — no card required. Then from £
+                {Math.min(...TIERS.map((t) => t.pricePerMonthGBP))}/month. No
+                lifetime-deal lock-in, no performance fees — you are licensing
+                software, not buying a promise.
               </p>
             </div>
             <Link href="/pricing" className="btn-primary shrink-0">

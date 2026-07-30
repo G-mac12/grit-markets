@@ -100,9 +100,17 @@ Business (the real list):
    the Safety Buffer skim habit and the daily digest exist precisely to
    make outcomes survivable and expectations correct. Retention IS risk
    management here.
-6. **Trial → paid conversion mechanics** (M12): 30-day card-required
-   trial, dunning, fingerprint-based trial-abuse control — spec'd, build
-   last.
+6. **Trial → paid conversion mechanics** (M12, model confirmed
+   2026-07-30): **no-card free first month** on every plan, demo or live.
+   Trial = a manual-style licence with a 30-day expires_at (already
+   built). From day ~14 a polite billing-setup email sequence begins
+   (day 14 value recap, day 21, day 26, day 29 final) linking to Stripe
+   Checkout; paying attaches a subscription to the existing licence (the
+   migration path already in the schema). No payment → licence expires,
+   EA stands down gracefully, 7-day win-back email. Abuse control: one
+   free month per email AND per MT5 account number (the licence binding
+   is the fingerprint). Card-required trials and signup-time dunning are
+   dropped from the plan.
 
 ## 5. Sequence from today
 
