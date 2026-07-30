@@ -190,7 +190,7 @@ export default function HowItWorksPage() {
       <section className="mx-auto max-w-site px-5 py-24 md:px-10">
         <p className="label-micro mb-4">The controls</p>
         <h2 className="max-w-3xl font-display text-display-md font-medium">
-          Six controls stand between the ladder and your account.
+          Seven controls stand between the ladder and your account.
         </h2>
         <div className="mt-12">
           <SpecCards />

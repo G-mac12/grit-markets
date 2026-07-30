@@ -31,17 +31,13 @@ export function softwareApplicationJsonLd(): JsonLd {
     applicationCategory: "FinanceApplication",
     operatingSystem: "MetaTrader 5",
     offers: {
-      "@type": "Offer",
-      // [OWNER INPUT: replace with confirmed launch pricing]
+      "@type": "AggregateOffer",
       priceCurrency: "GBP",
-      price: "49.00",
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        priceCurrency: "GBP",
-        price: "49.00",
-        billingDuration: "P1M",
-        priceType: "https://schema.org/Subscription",
-      },
+      lowPrice: "29.00",
+      highPrice: "49.00",
+      offerCount: 2,
+      description:
+        "Standard £29/month or Premium £49/month — first month free on both, demo or live.",
       url: absoluteUrl("/pricing"),
     },
     publisher: { "@id": `${SITE.url}/#organization` },

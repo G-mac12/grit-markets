@@ -19,7 +19,7 @@ export function billingConfigured(): boolean {
   return Boolean(
     process.env.STRIPE_SECRET_KEY &&
       process.env.STRIPE_PRICE_STANDARD &&
-      process.env.STRIPE_PRICE_PRO
+      process.env.STRIPE_PRICE_PREMIUM
   );
 }
 

@@ -14,12 +14,12 @@ export function getStripe(): Stripe {
 /** Maps our tier ids to Stripe Price ids (set in Vercel env). */
 export function priceIdForTier(tier: string): string | null {
   if (tier === "standard") return process.env.STRIPE_PRICE_STANDARD ?? null;
-  if (tier === "pro") return process.env.STRIPE_PRICE_PRO ?? null;
+  if (tier === "premium") return process.env.STRIPE_PRICE_PREMIUM ?? null;
   return null;
 }
 
-export function tierForPriceId(priceId: string): "standard" | "pro" | null {
+export function tierForPriceId(priceId: string): "standard" | "premium" | null {
   if (priceId === process.env.STRIPE_PRICE_STANDARD) return "standard";
-  if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
+  if (priceId === process.env.STRIPE_PRICE_PREMIUM) return "premium";
   return null;
 }

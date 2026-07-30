@@ -23,7 +23,7 @@ Phase 1 mode without them.
    `<version>/GritMarkets.ex5`. Enable the Email (magic link) auth provider
    with redirect URL `https://gritmarkets.com/auth/callback`.
 2. **Stripe** — create two recurring Prices matching `content/pricing.ts`
-   and put their ids in `STRIPE_PRICE_STANDARD` / `STRIPE_PRICE_PRO`. Add a
+   and put their ids in `STRIPE_PRICE_STANDARD` / `STRIPE_PRICE_PREMIUM`. Add a
    webhook endpoint `https://gritmarkets.com/api/stripe/webhook` for:
    `checkout.session.completed`, `invoice.payment_failed`,
    `customer.subscription.updated`, `customer.subscription.deleted`.
